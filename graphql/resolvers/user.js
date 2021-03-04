@@ -103,6 +103,15 @@ module.exports = {
                 })
             }
 
+            if (password !== password2) {
+                throw new UserInputError('Password does not match', {
+                    errors: {
+                        password: 'Password must match',
+                        password2: 'Password must match'
+                    }
+                })
+            }
+
             //hash password
             const salt = await bcrypt.genSalt(10)
             password = await bcrypt.hash(password, salt)
