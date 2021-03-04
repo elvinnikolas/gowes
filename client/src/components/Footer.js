@@ -11,7 +11,7 @@ export const Footer = () => (
         <Segment inverted vertical style={{ margin: '5em 0em 0em', padding: '4em 0em' }} attached='bottom'>
             <Container textAlign='center'>
                 <div className="logo">
-                    <IoMdBicycle color='rgb(206, 206, 206)' style={{ fontSize: 28, marginRight: 5 }}></IoMdBicycle>
+                    <IoMdBicycle color='rgb(206, 206, 206)' style={{ fontSize: 24, marginRight: 5 }}></IoMdBicycle>
                     Gowes
                 </div>
                 <br></br>

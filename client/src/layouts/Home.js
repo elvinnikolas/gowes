@@ -1,73 +1,121 @@
-import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
-import { Fab, Action } from 'react-tiny-fab';
+import React from 'react'
+import { Item, Transition, Grid, Segment, Dropdown, Icon, Divider } from 'semantic-ui-react'
+
+import { ThreadExplore } from '../components/Thread'
+import Spinner from '../components/Spinner'
 import styled from 'styled-components'
 
-import { faPlus, faStream, faUsers } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useQuery } from '@apollo/react-hooks'
+import { GET_POSTS } from '../util/graphql'
 
 const Styles = styled.div`
-  .tooltips {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-  }
-  
-  .tooltips .tooltiptext {
-    visibility: hidden;
-    width: 100px;
-    background-color: black;
-    color: #bbb;
-    font-size: 12px;
-    text-align: center;
-    border-radius: 5px;
-    padding: 10px 0;
-    
-    /* Position the tooltips */
-    position: absolute;
-    z-index: 1;
-    top: 100%;
-    left: 50%;
-    margin-left: -30px;
-  }
-  
-  .tooltips:hover .tooltiptext {
-    visibility: visible;
-  }
-`;
+`
 
 function Home() {
+    const { loading, data } = useQuery(GET_POSTS)
+
+    const { getPosts: posts } = data ? data : []
+
+    const communityOptions = [
+        {
+            key: 0,
+            text: 'All communities',
+            value: 'all',
+        },
+        {
+            key: 1,
+            text: 'Persekutan',
+            value: 'Persekutan',
+        },
+        {
+            key: 2,
+            text: 'Mantap mantap',
+            value: 'Mantap mantap',
+        }
+    ]
+
+    const filterOptions = [
+        {
+            key: 0,
+            text: 'Most recent',
+            value: 'recent',
+        },
+        {
+            key: 1,
+            text: 'Most popular',
+            value: 'popular',
+        },
+        {
+            key: 1,
+            text: 'Most likes',
+            value: 'like',
+        },
+        {
+            key: 2,
+            text: 'Most comments',
+            value: 'comment',
+        }
+    ]
 
     return (
         <Styles>
-            <Fab
-                icon={<FontAwesomeIcon icon={faPlus} />}
-                mainButtonStyles={fab_styles}
-            >
-                <Link to={`/new-thread`}>
-                    <Action
-                        text="Create Thread"
-                        style={fab_styles}
-                    >
-                        <FontAwesomeIcon icon={faStream} />
-                    </Action>
-                </Link>
-                <Link to={`/create-community`}>
-                    <Action
-                        text="Create Community"
-                        style={fab_styles}
-                    >
-                        <FontAwesomeIcon icon={faUsers} />
-                    </Action>
-                </Link>
-            </Fab>
+            <Grid columns='equal'>
+                <Grid.Column>
+                </Grid.Column>
 
+                <Grid.Column width={14}>
+                    <Segment>
+                        <Grid columns={2} relaxed='very' stackable>
+                            <Grid.Column>
+                                <Icon name="eye" />
+                                <b>&nbsp;Show all threads from&nbsp;&nbsp;</b>
+                                <Dropdown
+                                    search
+                                    selection
+                                    options={communityOptions}
+                                    defaultValue={communityOptions[0].value}
+                                />
+                            </Grid.Column>
+                            <Grid.Column>
+                                <Icon name="filter" />
+                                <b>&nbsp;Filter by&nbsp;&nbsp;</b>
+                                <Dropdown
+                                    selection
+                                    options={filterOptions}
+                                    defaultValue={filterOptions[0].value}
+                                />
+                            </Grid.Column>
+                        </Grid>
+                        <Divider vertical />
+                    </Segment>
+                    <Segment placeholder>
+                        <Grid relaxed='very' stackable>
+                            <Grid.Column>
+
+                                <Item.Group divided>
+                                    {loading ? (
+                                        <Spinner />
+                                    ) : (
+                                            <Transition.Group>
+                                                {
+                                                    posts &&
+                                                    posts.map(post => (
+                                                        <ThreadExplore key={post._id} post={post} />
+                                                    ))
+                                                }
+                                            </Transition.Group>
+                                        )}
+                                </Item.Group>
+
+                            </Grid.Column>
+                        </Grid>
+                    </Segment>
+                </Grid.Column>
+
+                <Grid.Column>
+                </Grid.Column>
+            </Grid>
         </Styles>
     )
 }
-
-const fab_styles = {
-    background: "#007bff"
-};
-
 export default Home
