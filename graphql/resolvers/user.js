@@ -22,7 +22,7 @@ module.exports = {
 
         async getUserPosts(_, { id }) {
             try {
-                const posts = await Post.find({ user: id })
+                const posts = await Post.find({ user: id }).populate('community')
                 return posts
 
             } catch (error) {

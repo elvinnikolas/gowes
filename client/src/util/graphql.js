@@ -201,6 +201,64 @@ export const FETCH_QUERY_HOME = gql`
   }
 `
 
+export const FETCH_QUERY_PROFILE = gql`
+  query($id: ID!) {
+      getUser(id: $id) {
+        _id
+        name
+        bio
+      }
+      getUserPosts(id: $id) {
+        _id
+        user
+        name
+        date
+        title
+        content
+        likes{
+            _id
+            user
+        }
+        dislikes{
+            _id
+            user
+        }
+        bookmarks{
+            _id
+            user
+            date
+        }
+        comments{
+            _id
+            user
+            comment
+        }
+        community {
+            _id
+            name
+        }
+      }
+      getUserCommunities(userId: $id) {
+        _id
+        community {
+            _id
+            name
+            bio
+        }
+      }
+  }
+`
+
+export const GET_USER = gql`
+    query($id: ID!) {
+        getUser(id: $id) {
+            _id
+            name
+            bio
+        }
+    }
+`
+
 //MUTATION
 export const LIKE_POST = gql`
   mutation likePost(
@@ -278,5 +336,24 @@ export const DELETE_POST = gql`
       $postId: ID!
     ) {
         deletePost(postId: $postId)
+    }
+`
+
+export const EDIT_PROFILE = gql`
+    mutation editProfile(
+        $name: String!
+        $bio: String!
+    ) {
+        editProfile(
+            profileInput:
+            {
+                name: $name
+                    bio: $bio
+            }
+        ) {
+            _id
+            name
+            bio
+        }
     }
 `

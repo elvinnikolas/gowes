@@ -69,7 +69,7 @@ function Home() {
             setFilterCommunity(false)
             setCommunityId('000000000000000000000000')
         }
-        refetch({ variables: { id: id, communityId: communityId } })
+        refetch()
     }
 
     return (

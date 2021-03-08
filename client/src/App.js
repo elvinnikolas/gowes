@@ -20,6 +20,8 @@ import Home from './layouts/Home'
 import Login from './layouts/Login'
 import Register from './layouts/Register'
 import BookmarkThread from './layouts/Bookmark'
+import { Profile, UserProfile } from './layouts/Profile'
+import EditProfile from './layouts/EditProfile'
 
 //route
 import AuthRoute from './routes/AuthRoute'
@@ -37,6 +39,9 @@ const App = () => {
               <AuthRoute exact path="/login" component={Login} />
               <AuthRoute exact path="/register" component={Register} />
               <PrivateRoute exact path="/bookmark" component={BookmarkThread} />
+              <PrivateRoute exact path="/user-profile" component={UserProfile} />
+              <PrivateRoute exact path="/profile/:id" component={Profile} />
+              <PrivateRoute exact path="/edit-profile" component={EditProfile} />
             </Switch>
           </Layout>
         </Container>

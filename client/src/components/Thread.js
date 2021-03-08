@@ -297,7 +297,7 @@ export function ThreadExplore({
                                 {name}
                             </Link>
                             <Icon name='angle right' />
-                            <Link to={`/home-community/${community._id}`}>
+                            <Link to={`/community/${community._id}`}>
                                 {community.name}
                             </Link>
                         </Item.Meta>
