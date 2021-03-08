@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { Item, Transition, Grid, Segment, Dropdown, Icon, Divider } from 'semantic-ui-react'
 
 import { ThreadExplore } from '../components/Thread'
@@ -6,33 +6,41 @@ import Spinner from '../components/Spinner'
 import styled from 'styled-components'
 
 import { useQuery } from '@apollo/react-hooks'
-import { GET_POSTS } from '../util/graphql'
+import { AuthContext } from '../context/auth'
+import { FETCH_QUERY_HOME } from '../util/graphql'
 
 const Styles = styled.div`
 `
 
 function Home() {
-    const { loading, data } = useQuery(GET_POSTS)
+    const { auth } = useContext(AuthContext)
+    const id = auth._id
+    const [communityId, setCommunityId] = useState('000000000000000000000000')
+    const [filterCommunity, setFilterCommunity] = useState(false)
 
-    const { getPosts: posts } = data ? data : []
+    let { loading, data, refetch } = useQuery(FETCH_QUERY_HOME, {
+        variables: { id: id, communityId: communityId }
+    })
 
-    const communityOptions = [
+    const { getUserCommunities: communities, getUserCommunitiesPosts: allPosts, getUserCommunityPosts: filterPosts } = data ? data : []
+
+    let communityOptions = [
         {
             key: 0,
             text: 'All communities',
             value: 'all',
-        },
-        {
-            key: 1,
-            text: 'Persekutan',
-            value: 'Persekutan',
-        },
-        {
-            key: 2,
-            text: 'Mantap mantap',
-            value: 'Mantap mantap',
         }
     ]
+
+    if (communities) {
+        communities.forEach(com => {
+            communityOptions.push({
+                key: com._id,
+                text: com.community.name,
+                value: com.community._id,
+            })
+        })
+    }
 
     const filterOptions = [
         {
@@ -46,16 +54,23 @@ function Home() {
             value: 'popular',
         },
         {
-            key: 1,
-            text: 'Most likes',
-            value: 'like',
-        },
-        {
             key: 2,
             text: 'Most comments',
             value: 'comment',
         }
     ]
+
+    const onClickFilter = (e, { value }) => {
+        e.persist()
+        if (value !== 'all') {
+            setFilterCommunity(true)
+            setCommunityId(value)
+        } else {
+            setFilterCommunity(false)
+            setCommunityId('000000000000000000000000')
+        }
+        refetch({ variables: { id: id, communityId: communityId } })
+    }
 
     return (
         <Styles>
@@ -74,11 +89,12 @@ function Home() {
                                     selection
                                     options={communityOptions}
                                     defaultValue={communityOptions[0].value}
+                                    onChange={onClickFilter}
                                 />
                             </Grid.Column>
                             <Grid.Column>
                                 <Icon name="filter" />
-                                <b>&nbsp;Filter by&nbsp;&nbsp;</b>
+                                <b>&nbsp;Sort by&nbsp;&nbsp;</b>
                                 <Dropdown
                                     selection
                                     options={filterOptions}
@@ -96,15 +112,26 @@ function Home() {
                                     {loading ? (
                                         <Spinner />
                                     ) : (
+                                        filterCommunity ?
                                             <Transition.Group>
                                                 {
-                                                    posts &&
-                                                    posts.map(post => (
+                                                    filterPosts &&
+                                                    filterPosts.map(post => (
                                                         <ThreadExplore key={post._id} post={post} />
                                                     ))
                                                 }
                                             </Transition.Group>
-                                        )}
+                                            :
+                                            <Transition.Group>
+                                                {
+                                                    allPosts &&
+                                                    allPosts.map(post => (
+                                                        <ThreadExplore key={post._id} post={post} />
+                                                    ))
+                                                }
+                                            </Transition.Group>
+                                    )
+                                    }
                                 </Item.Group>
 
                             </Grid.Column>

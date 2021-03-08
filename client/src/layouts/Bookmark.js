@@ -48,7 +48,7 @@ function BookmarkThread() {
                         <Grid relaxed='very' stackable>
                             <Grid.Column>
                                 <Icon name="filter" />
-                                <b>&nbsp;Filter by&nbsp;&nbsp;</b>
+                                <b>&nbsp;Sort by&nbsp;&nbsp;</b>
                                 <Dropdown
                                     selection
                                     options={filterOptions}

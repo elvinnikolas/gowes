@@ -27,21 +27,45 @@ module.exports = {
             }
         },
 
-        // async getBookmarkPost(_, { id }) {
-        //     try {
-        //         const posts = await Post.find({ 'bookmarks.user': id }).sort({ 'bookmarks.date': -1 })
-        //         return posts
-
-        //     } catch (error) {
-        //         throw new Error(error)
-        //     }
-        // }
-
         async getBookmarkPosts(_, { }, context) {
             const payload = auth(context)
 
             try {
                 const posts = await Post.find({ 'bookmarks.user': payload._id }).sort({ 'bookmarks.date': -1 }).populate('community')
+                return posts
+
+            } catch (error) {
+                throw new Error(error)
+            }
+        },
+
+        async getUserCommunitiesPosts(_, { }, context) {
+            const payload = auth(context)
+            const communities = await Member.find({ user: payload._id, isJoin: true })
+
+            let communitiesId = []
+            communities.forEach(community => {
+                communitiesId.push(community.community)
+            });
+
+            try {
+                posts = await Post.find({
+                    community: {
+                        $in: communitiesId
+                    }
+                }).populate('community')
+
+                return posts
+
+            } catch (error) {
+                throw new Error(error)
+            }
+        },
+
+        async getUserCommunityPosts(_, { communityId }) {
+
+            try {
+                const posts = await Post.find({ community: communityId }).populate('community')
                 return posts
 
             } catch (error) {
