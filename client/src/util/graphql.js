@@ -249,6 +249,22 @@ export const FETCH_QUERY_PROFILE = gql`
   }
 `
 
+export const GET_COMMUNITIES = gql`
+  query {
+    getCommunities {
+        _id
+        name
+        bio
+        date
+        city
+        province
+        isPrivate
+        isActive
+        memberCount
+      }
+  }
+`
+
 export const GET_USER = gql`
     query($id: ID!) {
         getUser(id: $id) {

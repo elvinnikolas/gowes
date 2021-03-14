@@ -34,6 +34,10 @@ const Styles = styled.div`
     color: rgb(206, 206, 206);
     font-size: 20px;
   }
+
+  .navbar-style {
+    z-index: 1000;
+  }
 `
 const NavbarDefault = () => {
   const { auth, logout } = useContext(AuthContext)
@@ -55,7 +59,7 @@ const NavbarDefault = () => {
   const NavbarMenu =
     auth ?
       (
-        <Segment>
+        <Segment className='navbar-style'>
           <div className='ui huge top inverted fixed menu navbar'>
             <Menu size="large" fluid inverted secondary>
               <Menu.Item></Menu.Item>
