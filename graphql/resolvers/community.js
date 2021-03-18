@@ -261,16 +261,27 @@ module.exports = {
 
             try {
                 if (community) {
-                    await Community.findOneAndUpdate(
-                        { _id: communityId },
-                        { $inc: { memberCount: -1 } },
-                        { new: true })
+                    if (community.memberCount <= 1) {
+                        await community.remove()
 
-                    if (member) {
-                        await member.remove()
-                        return 'Member removed'
+                        if (member) {
+                            await member.remove()
+                            return 'Member removed'
+                        } else {
+                            throw new Error(error)
+                        }
                     } else {
-                        throw new Error(error)
+                        await Community.findOneAndUpdate(
+                            { _id: communityId },
+                            { $inc: { memberCount: -1 } },
+                            { new: true })
+
+                        if (member) {
+                            await member.remove()
+                            return 'Member removed'
+                        } else {
+                            throw new Error(error)
+                        }
                     }
 
                 } else {

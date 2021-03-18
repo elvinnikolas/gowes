@@ -23,6 +23,8 @@ import BookmarkThread from './layouts/Bookmark'
 import { Profile, UserProfile } from './layouts/Profile'
 import EditProfile from './layouts/EditProfile'
 import ExploreCommunity from './layouts/ExploreCommunity'
+import { Community } from './layouts/Community'
+import { CreateCommunity } from './layouts/CreateCommunity'
 
 //route
 import AuthRoute from './routes/AuthRoute'
@@ -44,6 +46,8 @@ const App = () => {
               <PrivateRoute exact path="/profile/:id" component={Profile} />
               <PrivateRoute exact path="/edit-profile" component={EditProfile} />
               <PrivateRoute exact path="/explore-community" component={ExploreCommunity} />
+              <PrivateRoute path="/community/:id" component={Community} />
+              <PrivateRoute path="/create-community" component={CreateCommunity} />
             </Switch>
           </Layout>
         </Container>
