@@ -64,7 +64,7 @@ export function Community(props) {
                         icon={<FontAwesomeIcon icon={faPlus} />}
                         mainButtonStyles={fab_styles}
                     >
-                        <Link to={`/new-thread/${details._id}`}>
+                        <Link to={`/create-thread/${communityId}`}>
                             <Action
                                 text="Create Thread"
                                 style={fab_styles}

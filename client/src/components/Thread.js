@@ -15,7 +15,8 @@ import {
     LIKE_POST,
     DISLIKE_POST,
     BOOKMARK_POST,
-    DELETE_POST
+    DELETE_POST,
+    FETCH_QUERY_COMMUNITY
 } from '../util/graphql'
 
 const Styles = styled.div`
@@ -66,7 +67,7 @@ const Styles = styled.div`
 `
 
 export function Thread({
-    post: { _id, user, name, date, title, content, likes, dislikes, comments, bookmarks }
+    post: { _id, user, name, date, title, content, likes, dislikes, comments, bookmarks, community }
 }) {
     const { auth } = useContext(AuthContext)
     let { liked, disliked, bookmarked } = false
@@ -113,19 +114,12 @@ export function Thread({
         }
     })
     const [deletePost] = useMutation(DELETE_POST, {
-        update(proxy) {
-            setConfirmOpen(false)
-            const data = proxy.readQuery({
-                query: GET_POSTS
-            })
-            proxy.writeQuery({
-                query: GET_POSTS,
-                data: {
-                    getPosts: data.getPosts.filter(p => p._id !== _id)
-                }
-            })
-        },
-        variables: { postId: _id }
+        variables: { postId: _id },
+        refetchQueries: [{
+            query: FETCH_QUERY_COMMUNITY,
+            variables: { userId: auth._id, communityId: community._id }
+        }],
+        awaitRefetchQueries: true
     })
 
     const [confirmOpen, setConfirmOpen] = useState(false)

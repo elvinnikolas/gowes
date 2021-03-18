@@ -321,6 +321,9 @@ export const FETCH_QUERY_HEADER_COMMUNITY = gql`
                 user
                 date
             }
+            community {
+                _id
+            }
         }
         getCommunityMembers(communityId: $communityId) {
             _id
@@ -389,6 +392,9 @@ export const FETCH_QUERY_MENU_COMMUNITY = gql`
             user
             date
         }
+        community {
+            _id
+        }
     }
     getCommunityMembers(communityId: $communityId) {
         _id
@@ -456,6 +462,9 @@ export const FETCH_QUERY_COMMUNITY = gql`
             _id
             user
             date
+        }
+        community {
+            _id
         }
     }
     getCommunityMembers(communityId: $communityId) {
@@ -678,6 +687,42 @@ export const CREATE_COMMUNITY = gql`
             _id
             name
             bio
+        }
+    }
+`
+
+export const CREATE_POST = gql`
+  mutation createPost(
+      $title: String!
+      $content: String!
+      $communityId: ID!
+    ) {
+        createPost(title: $title, content: $content, communityId: $communityId) {
+            _id
+            user
+            name
+            title
+            date
+            content
+            likes {
+                _id
+                user
+            }
+            comments {
+                _id
+                user
+                date
+                comment
+            }
+            dislikes {
+                _id
+                user
+            }
+            bookmarks {
+                _id
+                user
+                date
+            }
         }
     }
 `

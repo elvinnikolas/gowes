@@ -25,6 +25,7 @@ import EditProfile from './layouts/EditProfile'
 import ExploreCommunity from './layouts/ExploreCommunity'
 import { Community } from './layouts/Community'
 import { CreateCommunity } from './layouts/CreateCommunity'
+import { CreateThread } from './layouts/CreateThread'
 
 //route
 import AuthRoute from './routes/AuthRoute'
@@ -48,6 +49,7 @@ const App = () => {
               <PrivateRoute exact path="/explore-community" component={ExploreCommunity} />
               <PrivateRoute path="/community/:id" component={Community} />
               <PrivateRoute path="/create-community" component={CreateCommunity} />
+              <PrivateRoute path="/create-thread/:id" component={CreateThread} />
             </Switch>
           </Layout>
         </Container>
