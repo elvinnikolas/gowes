@@ -89,30 +89,40 @@ const NavbarDefault = () => {
                 as={Link}
                 to="/faq"
               />
+              <Menu.Item>
+                <Dropdown className="navbar-subtext" item text='EXPLORE'>
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      className="navbar-subtext"
+                      name='THREAD'
+                      active={activeItem === 'THREAD'}
+                      onClick={handleItemClick}
+                      as={Link}
+                      to="/explore-thread"
+                    >
+                      THREAD
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      className="navbar-subtext"
+                      name='COMMUNITY'
+                      active={activeItem === 'COMMUNITY'}
+                      onClick={handleItemClick}
+                      as={Link}
+                      to="/explore-community"
+                    >
+                      COMMUNITY
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Menu.Item>
               <Menu.Item
-                className="navbar-subtext"
-                name='EXPLORE'
-                active={activeItem === 'EXPLORE'}
-                onClick={handleItemClick}
-                as={Link}
-                to="/explore-thread"
-              />
-              <Menu.Item
-                className="navbar-subtext"
-                name='COMMUNITY'
-                active={activeItem === 'COMMUNITY'}
-                onClick={handleItemClick}
-                as={Link}
-                to="/explore-community"
-              />
-              {/* <Menu.Item
                 className="navbar-subtext"
                 name='MARKETPLACE'
                 active={activeItem === 'MARKETPLACE'}
                 onClick={handleItemClick}
                 as={Link}
                 to="/marketplace"
-              /> */}
+              />
 
 
               <Menu.Menu position='right'>
@@ -197,21 +207,39 @@ const NavbarDefault = () => {
                 as={Link}
                 to="/faq"
               />
+              <Menu.Item>
+                <Dropdown className="navbar-subtext" item text='EXPLORE'>
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      className="navbar-subtext"
+                      name='THREAD'
+                      active={activeItem === 'THREAD'}
+                      onClick={handleItemClick}
+                      as={Link}
+                      to="/explore-thread"
+                    >
+                      THREAD
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      className="navbar-subtext"
+                      name='COMMUNITY'
+                      active={activeItem === 'COMMUNITY'}
+                      onClick={handleItemClick}
+                      as={Link}
+                      to="/explore-community"
+                    >
+                      COMMUNITY
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Menu.Item>
               <Menu.Item
                 className="navbar-subtext"
-                name='EXPLORE'
-                active={activeItem === 'EXPLORE'}
+                name='MARKETPLACE'
+                active={activeItem === 'MARKETPLACE'}
                 onClick={handleItemClick}
                 as={Link}
-                to="/explore-thread"
-              />
-              <Menu.Item
-                className="navbar-subtext"
-                name='COMMUNITY'
-                active={activeItem === 'COMMUNITY'}
-                onClick={handleItemClick}
-                as={Link}
-                to="/explore-community"
+                to="/marketplace"
               />
 
 
