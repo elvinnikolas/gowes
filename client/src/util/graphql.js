@@ -36,6 +36,39 @@ export const GET_POSTS = gql`
     }
 `
 
+export const GET_POST = gql`
+  query($postId: ID!) {
+      getPost(postId: $postId) {
+            _id
+            user
+            name
+            title
+            date
+            content
+            likes {
+                _id
+                user
+            }
+            comments {
+                _id
+                user
+                name
+                date
+                comment
+            }
+            dislikes {
+                _id
+                user
+            }
+            bookmarks {
+                _id
+                user
+                date
+            }
+      }
+  }
+`
+
 export const GET_BOOKMARK_POSTS = gql`
   query {
       getBookmarkPosts {
@@ -565,6 +598,42 @@ export const DELETE_POST = gql`
       $postId: ID!
     ) {
         deletePost(postId: $postId)
+    }
+`
+export const ADD_COMMENT = gql`
+    mutation addComment(
+        $postId: ID!
+        $comment: String!
+    ) {
+        addComment(postId: $postId, comment: $comment) 
+        {
+            _id
+            comments{
+                _id
+                user
+                name
+                date
+                comment
+            }
+        }
+    }
+`
+
+export const DELETE_COMMENT = gql`
+  mutation deleteComment(
+      $postId: ID!
+      $commentId: ID!
+    ) {
+        deleteComment(postId: $postId, commentId: $commentId) {
+            _id
+            comments {
+                _id
+                user
+                name
+                date
+                comment
+            }
+        }
     }
 `
 
