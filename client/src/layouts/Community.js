@@ -1,6 +1,6 @@
 import React, { createRef, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Container, Ref, Sticky } from 'semantic-ui-react'
+import { Container, Ref, Grid, Sticky } from 'semantic-ui-react'
 
 import { HeaderCommunity } from '../components/Header'
 import { MenuCommunity } from '../components/Menu'
@@ -39,42 +39,52 @@ export function Community(props) {
     } else {
 
         return (
-            <Ref innerRef={contextRef}>
-                <Container>
-                    <div>
-                        <br></br>
-                        <HeaderCommunity
-                            details={details}
-                            status={status}
-                            members={members}
-                        />
-                    </div>
-                    <br></br>
-                    <MenuCommunity
-                        details={details}
-                        status={status}
-                        posts={posts}
-                        members={members}
-                        requests={requests}
-                        refetch={refetch}
-                        contextref={contextRef}
-                    />
+            <Grid columns='equal'>
+                <Grid.Column>
+                </Grid.Column>
 
-                    <Fab
-                        icon={<FontAwesomeIcon icon={faPlus} />}
-                        mainButtonStyles={fab_styles}
-                    >
-                        <Link to={`/create-thread/${communityId}`}>
-                            <Action
-                                text="Create Thread"
-                                style={fab_styles}
+                <Grid.Column width={14}>
+
+                    <Ref innerRef={contextRef}>
+                        <Container>
+                            <HeaderCommunity
+                                details={details}
+                                status={status}
+                                members={members}
+                                posts={posts}
+                            />
+                            <br></br>
+                            <MenuCommunity
+                                details={details}
+                                status={status}
+                                posts={posts}
+                                members={members}
+                                requests={requests}
+                                refetch={refetch}
+                                contextref={contextRef}
+                            />
+
+                            <Fab
+                                icon={<FontAwesomeIcon icon={faPlus} />}
+                                mainButtonStyles={fab_styles}
                             >
-                                <FontAwesomeIcon icon={faStream} />
-                            </Action>
-                        </Link>
-                    </Fab>
-                </Container>
-            </Ref>
+                                <Link to={`/create-thread/${communityId}`}>
+                                    <Action
+                                        text="Create Thread"
+                                        style={fab_styles}
+                                    >
+                                        <FontAwesomeIcon icon={faStream} />
+                                    </Action>
+                                </Link>
+                            </Fab>
+                        </Container>
+                    </Ref>
+
+                </Grid.Column>
+
+                <Grid.Column>
+                </Grid.Column>
+            </Grid>
         )
     }
 }

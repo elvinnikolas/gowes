@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Link, withRouter } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { Feed, Image, Icon, Button, Comment, Header, Confirm, Grid, Segment } from 'semantic-ui-react'
 import { CommentThread, CreateComment } from '../components/Comment'
 import Moment from 'react-moment'
@@ -26,6 +26,7 @@ const Styles = styled.div`
 `
 
 export function ThreadDetail(props) {
+    const history = useHistory()
     const postId = props.match.params.id
 
     const { loading, data, refetch } = useQuery(GET_POST, {
@@ -47,26 +48,14 @@ export function ThreadDetail(props) {
     })
 
     const [deletePost] = useMutation(DELETE_POST, {
-        update(proxy) {
-            setConfirmOpen(false)
-            const data = proxy.readQuery({
-                query: GET_POSTS
-            })
-            proxy.writeQuery({
-                query: GET_POSTS,
-                data: {
-                    getPosts: data.getPosts.filter(p => p._id !== postId)
-                }
-            })
-            deletePostCallback()
-        },
         variables: { postId: postId }
     })
 
     const [confirmOpen, setConfirmOpen] = useState(false)
 
     function deletePostCallback() {
-        props.history.push('/')
+        deletePost()
+        history.go(-1)
     }
 
     if (loading) {
@@ -105,10 +94,10 @@ export function ThreadDetail(props) {
                                     bookmarked = true : bookmarked
                             )}
                             {bookmarked ?
-                                (<Button size='tiny' icon='bookmark' basic color='blue' floated='right'
+                                (<Button primary size='tiny' color='blue' icon='bookmark' floated='right'
                                     onClick={bookmarkPost}
                                 />) :
-                                (<Button size='tiny' icon='bookmark' basic color='white' floated='right'
+                                (<Button primary size='tiny' basic color='blue' icon='bookmark' floated='right'
                                     onClick={bookmarkPost}
                                 />)
                             }
@@ -121,12 +110,12 @@ export function ThreadDetail(props) {
                                     <Confirm
                                         open={confirmOpen}
                                         onCancel={() => setConfirmOpen(false)}
-                                        onConfirm={deletePost}
+                                        onConfirm={deletePostCallback}
                                     />
                                 </>
                             )}
 
-                            <Button.Group>
+                            <Button.Group basic>
                                 {!auth.loading && likes.map(like =>
                                     like.user === auth._id ?
                                         liked = true : liked

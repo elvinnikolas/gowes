@@ -19,7 +19,8 @@ const Styles = styled.div`
 export function HeaderCommunity({
     details: { _id, name, bio, date, city, province, isPrivate, isActive, memberCount },
     status: { isAdmin, isJoin, isRequest },
-    members
+    members,
+    posts
 }) {
 
     const { auth } = useContext(AuthContext)
@@ -85,7 +86,7 @@ export function HeaderCommunity({
     }
 
     return (
-        <div>
+        <Segment placeholder>
             <Header as='h2' icon textAlign='center'>
                 <Icon name='bicycle' circular />
                 <Header.Content>{name}</Header.Content>
@@ -95,16 +96,22 @@ export function HeaderCommunity({
                     <Icon name='lock' /> {isPrivate ? "Private" : "Public"}
                 </Label>
                 <Label size='medium'>
-                    <Icon name='user' /> {memberCount} {memberCount <= 1 ? "member" : "members"}
-                </Label>
-                <Label size='medium'>
                     <Icon name='map marker' /> {city}
                 </Label>
                 <Label size='medium'>
                     <Icon name='map pin' /> {province}
                 </Label>
+                <br></br>
+                <Label basic size='medium'>
+                    <Icon name='user' /> {memberCount} {memberCount <= 1 ? "member" : "members"}
+                </Label>
+                <Label basic size='medium'>
+                    <Icon name='edit' /> {posts.length} {posts.length <= 1 ? "thread" : "threads"}
+                </Label>
             </Container>
-            <br></br>
+            <Container>
+                <br></br>
+            </Container>
             <Container text textAlign='center'>
                 <p>{bio}</p>
 
@@ -181,6 +188,6 @@ export function HeaderCommunity({
                         )
                 }
             </Container>
-        </div>
+        </Segment>
     )
 }

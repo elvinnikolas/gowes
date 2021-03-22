@@ -69,25 +69,25 @@ export function MenuCommunity({
     })
 
     const [acceptMember] = useMutation(ACCEPT_MEMBER, {
-        update(_, result) {
+        update() {
             refetch()
         }
     })
 
     const [rejectMember] = useMutation(REJECT_MEMBER, {
-        update(_, result) {
+        update() {
             refetch()
         }
     })
 
     const [appointAdmin] = useMutation(APPOINT_ADMIN, {
-        update(_, result) {
+        update() {
             refetch()
         }
     })
 
     const [removeMember] = useMutation(REMOVE_MEMBER, {
-        update(_, result) {
+        update() {
             refetch()
         }
     })
@@ -102,21 +102,35 @@ export function MenuCommunity({
                         menuItem: 'Thread',
                         render: () =>
                             isJoin ?
-                                (
-                                    <Segment attached='bottom'>
-                                        <Item.Group divided>
-                                            <Transition.Group>
-                                                {
-                                                    posts &&
-                                                    posts.map(post => (
-                                                        <Thread key={post._id} post={post} />
-                                                    ))
-                                                }
-                                            </Transition.Group>
-                                        </Item.Group>
-                                    </Segment>
-                                ) :
-                                (
+                                posts.length > 0 ?
+                                    (
+                                        <Segment attached='bottom'>
+                                            <Item.Group divided>
+                                                <Transition.Group>
+                                                    {
+                                                        posts &&
+                                                        posts.map(post => (
+                                                            <Thread key={post._id} post={post} />
+                                                        ))
+                                                    }
+                                                </Transition.Group>
+                                            </Item.Group>
+                                        </Segment>
+                                    ) : (
+                                        <Segment placeholder>
+                                            <Header icon>
+                                                <Icon name='edit' />
+                                                No threads posted here yet
+                                                <br></br><br></br>
+                                                <Link to={`/create-thread/${communityId}`}>
+                                                    <Button primary>
+                                                        Create Thread
+                                                    </Button>
+                                                </Link>
+                                            </Header>
+                                        </Segment>
+                                    )
+                                : (
                                     <Segment placeholder>
                                         <Header icon>
                                             <Icon name='lock' />
@@ -254,62 +268,73 @@ export function MenuCommunity({
                                 </Menu.Item>
                             ),
                             render: () =>
-                                <Segment attached='bottom'>
-                                    <Card.Group divided link>
-                                        {
-                                            requests &&
-                                            requests.map(request => (
-                                                <Card fluid>
-                                                    <Card.Content>
-                                                        <Image
-                                                            floated='left'
-                                                            size='mini'
-                                                            src={profileImage}
-                                                        />
-                                                        <Card.Header>
-                                                            <Link
-                                                                to={`/profile/${request.user._id}`}
-                                                                style={{ color: 'inherit', textDecoration: 'inherit' }}
-                                                            >
-                                                                <b>{request.user.name}</b>
-                                                            </Link>
-                                                        </Card.Header>
-                                                        <Card.Meta>{request.user.bio}</Card.Meta>
-                                                        <Card.Description>
-                                                            <p>
-                                                                Let me innnn
-                                                            </p>
-                                                        </Card.Description>
-                                                    </Card.Content>
-                                                    <Card.Content extra>
-                                                        <div>
-                                                            <Button color='green' onClick={() =>
-                                                                acceptMember({
-                                                                    variables: {
-                                                                        communityId: communityId,
-                                                                        userId: request.user._id
-                                                                    }
-                                                                })
-                                                            }>
-                                                                Accept
-                                                            </Button>
-                                                            <Button color='red' onClick={() =>
-                                                                rejectMember({
-                                                                    variables: {
-                                                                        communityId: communityId,
-                                                                        userId: request.user._id
-                                                                    }
-                                                                })
-                                                            }>
-                                                                Reject
-                                                            </Button>
-                                                        </div>
-                                                    </Card.Content>
-                                                </Card>
-                                            ))
-                                        }
-                                    </Card.Group>
-                                </Segment>
+                                requests &&
+                                    requests.length > 0 ?
+                                    (
+                                        <Segment attached='bottom'>
+                                            <Card.Group divided link>
+                                                {
+                                                    requests.map(request => (
+                                                        <Card fluid>
+                                                            <Card.Content>
+                                                                <Image
+                                                                    floated='left'
+                                                                    size='mini'
+                                                                    src={profileImage}
+                                                                />
+                                                                <Card.Header>
+                                                                    <Link
+                                                                        to={`/profile/${request.user._id}`}
+                                                                        style={{ color: 'inherit', textDecoration: 'inherit' }}
+                                                                    >
+                                                                        <b>{request.user.name}</b>
+                                                                    </Link>
+                                                                </Card.Header>
+                                                                <Card.Meta>{request.user.bio}</Card.Meta>
+                                                                <Card.Description>
+                                                                    <p>
+                                                                        Let me innnn
+                                                                    </p>
+                                                                </Card.Description>
+                                                            </Card.Content>
+                                                            <Card.Content extra>
+                                                                <div>
+                                                                    <Button color='green' onClick={() =>
+                                                                        acceptMember({
+                                                                            variables: {
+                                                                                communityId: communityId,
+                                                                                userId: request.user._id
+                                                                            }
+                                                                        })
+                                                                    }>
+                                                                        Accept
+                                                                    </Button>
+                                                                    <Button color='red' onClick={() =>
+                                                                        rejectMember({
+                                                                            variables: {
+                                                                                communityId: communityId,
+                                                                                userId: request.user._id
+                                                                            }
+                                                                        })
+                                                                    }>
+                                                                        Reject
+                                                                    </Button>
+                                                                </div>
+                                                            </Card.Content>
+                                                        </Card>
+                                                    ))
+
+                                                }
+                                            </Card.Group>
+                                        </Segment>
+                                    ) : (
+                                        <Segment placeholder>
+                                            <Header icon>
+                                                <Icon name='user x' />
+                                                No new members request
+                                            </Header>
+                                        </Segment>
+                                    )
                         }
                         :
                         {}

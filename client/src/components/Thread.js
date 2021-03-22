@@ -140,41 +140,47 @@ export function Thread({
                             {content}
                         </Item.Description>
                         <Item.Extra>
-                            <Link to={`/thread/${_id}`}>
-                                <Button primary size='tiny' floated='right'>
-                                    Read more
+                            <Button.Group floated='right'>
+                                {auth && auth._id === user && (
+                                    <>
+                                        <Button negative size='tiny' icon='trash'
+                                            onClick={() => setConfirmOpen(true)}
+                                        />
+                                        <Confirm
+                                            content='Are you sure to delete this?'
+                                            cancelButton='NO'
+                                            confirmButton="YES"
+                                            open={confirmOpen}
+                                            onCancel={() => setConfirmOpen(false)}
+                                            onConfirm={deletePost}
+                                        />
+                                        <Button basic disabled></Button>
+                                    </>
+                                )}
+
+                                {!auth.loading && bookmark ?
+                                    bookmarked = true : bookmarked
+                                }
+                                {bookmarked ?
+                                    (<Button primary size='tiny' color='blue' icon='bookmark'
+                                        onClick={bookmarkPost}
+                                    />) :
+                                    (<Button primary size='tiny' basic color='blue' icon='bookmark'
+                                        onClick={bookmarkPost}
+                                    />)
+                                }
+
+                                <Button basic disabled></Button>
+
+                                <Link to={`/thread/${_id}`}>
+                                    <Button primary size='tiny' floated='right'>
+                                        Read more
                                 <Icon name='right chevron' />
-                                </Button>
-                            </Link>
-
-                            {!auth.loading && bookmark ?
-                                bookmarked = true : bookmarked
-                            }
-                            {bookmarked ?
-                                (<Button size='tiny' basic color='white' floated='right' onClick={bookmarkPost}>
-                                    <Icon color='blue' name='bookmark' style={{ margin: 0 }} />
-                                </Button>) :
-                                (<Button size='tiny' basic color='white' floated='right' onClick={bookmarkPost}>
-                                    <Icon name='bookmark' style={{ margin: 0 }} />
-                                </Button>)
-                            }
-
-                            {auth && auth._id === user && (
-                                <>
-                                    <Button negative size='tiny' floated='right' onClick={() => setConfirmOpen(true)}>
-                                        <Icon name='trash' style={{ margin: 0 }} />
                                     </Button>
-                                    <Confirm
-                                        content='Are you sure to delete this?'
-                                        cancelButton='NO'
-                                        confirmButton="YES"
-                                        open={confirmOpen}
-                                        onCancel={() => setConfirmOpen(false)}
-                                        onConfirm={deletePost}
-                                    />
-                                </>
-                            )}
-                            <Menu compact>
+                                </Link>
+                            </Button.Group>
+
+                            <Button.Group basic>
                                 {!auth.loading && likes.map(like =>
                                     like.user === auth._id ?
                                         liked = true : liked
@@ -202,7 +208,7 @@ export function Thread({
                                 <Button size='tiny' basic color='white'>
                                     <Icon name='comment' /> {comments.length}
                                 </Button>
-                            </Menu>
+                            </Button.Group>
                             <br></br>
                             <span className="float-right">{moment(date).fromNow()}</span>
                         </Item.Extra>
@@ -299,41 +305,47 @@ export function ThreadExplore({
                             {content}
                         </Item.Description>
                         <Item.Extra>
-                            <Link to={`/thread/${_id}`}>
-                                <Button primary size='tiny' floated='right'>
-                                    Read more
+                            <Button.Group floated='right'>
+                                {auth && auth._id === user && (
+                                    <>
+                                        <Button negative size='tiny' icon='trash'
+                                            onClick={() => setConfirmOpen(true)}
+                                        />
+                                        <Confirm
+                                            content='Are you sure to delete this?'
+                                            cancelButton='NO'
+                                            confirmButton="YES"
+                                            open={confirmOpen}
+                                            onCancel={() => setConfirmOpen(false)}
+                                            onConfirm={deletePost}
+                                        />
+                                        <Button basic disabled></Button>
+                                    </>
+                                )}
+
+                                {!auth.loading && bookmark ?
+                                    bookmarked = true : bookmarked
+                                }
+                                {bookmarked ?
+                                    (<Button primary size='tiny' color='blue' icon='bookmark'
+                                        onClick={bookmarkPost}
+                                    />) :
+                                    (<Button primary size='tiny' basic color='blue' icon='bookmark'
+                                        onClick={bookmarkPost}
+                                    />)
+                                }
+
+                                <Button basic disabled></Button>
+
+                                <Link to={`/thread/${_id}`}>
+                                    <Button primary size='tiny' floated='right'>
+                                        Read more
                                 <Icon name='right chevron' />
-                                </Button>
-                            </Link>
-
-                            {!auth.loading && bookmark ?
-                                bookmarked = true : bookmarked
-                            }
-                            {bookmarked ?
-                                (<Button size='tiny' basic color='white' floated='right' onClick={bookmarkPost}>
-                                    <Icon color='blue' name='bookmark' style={{ margin: 0 }} />
-                                </Button>) :
-                                (<Button size='tiny' basic color='white' floated='right' onClick={bookmarkPost}>
-                                    <Icon name='bookmark' style={{ margin: 0 }} />
-                                </Button>)
-                            }
-
-                            {auth && auth._id === user && (
-                                <>
-                                    <Button negative size='tiny' floated='right' onClick={() => setConfirmOpen(true)}>
-                                        <Icon name='trash' style={{ margin: 0 }} />
                                     </Button>
-                                    <Confirm
-                                        content='Are you sure to delete this?'
-                                        cancelButton='NAH PASS'
-                                        confirmButton="HELL YEAH"
-                                        open={confirmOpen}
-                                        onCancel={() => setConfirmOpen(false)}
-                                        onConfirm={deletePost}
-                                    />
-                                </>
-                            )}
-                            <Menu compact>
+                                </Link>
+                            </Button.Group>
+
+                            <Button.Group basic>
                                 {!auth.loading && likes.map(like =>
                                     like.user === auth._id ?
                                         liked = true : liked
@@ -361,7 +373,7 @@ export function ThreadExplore({
                                 <Button size='tiny' basic color='white'>
                                     <Icon name='comment' /> {comments.length}
                                 </Button>
-                            </Menu>
+                            </Button.Group>
                             <br></br>
                             <span className="float-right">{moment(date).fromNow()}</span>
                         </Item.Extra>
