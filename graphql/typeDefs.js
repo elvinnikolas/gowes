@@ -91,6 +91,18 @@ module.exports = gql`
         isRequest: Boolean!
     }
 
+    type Faq {
+        _id: ID!
+        category: String!
+        contents: [Content]!
+    }
+
+    type Content {
+        _id: ID!
+        question: String!
+        answer: String!
+    }
+
     # INPUT
     input RegisterInput {
         name: String!
@@ -117,8 +129,8 @@ module.exports = gql`
         getPosts: [Post]
         getPost(postId: ID!): Post
         getBookmarkPosts: [Post]
-        getUserCommunityPosts(communityId: ID!): [Post]
-        getUserCommunitiesPosts: [Post]
+        getUserCommunityPosts(communityId: ID!, filter: String!): [Post]
+        getUserCommunitiesPosts(filter: String): [Post]
 
         # user
         getUser(id: ID!): User
@@ -133,6 +145,9 @@ module.exports = gql`
         getUserCommunities(userId: ID!): [Member]
         getCommunityAndMemberStatus(userId: ID!, communityId: ID!): CommunityAndMemberStatus
         getMemberStatus(userId: ID!, communityId: ID!): Member
+
+        # faq
+        getFaqs: [Faq]
     }
 
     # MUTATION

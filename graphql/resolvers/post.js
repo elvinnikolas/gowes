@@ -39,7 +39,7 @@ module.exports = {
             }
         },
 
-        async getUserCommunitiesPosts(_, { }, context) {
+        async getUserCommunitiesPosts(_, { filter }, context) {
             const payload = auth(context)
             const communities = await Member.find({ user: payload._id, isJoin: true })
 
@@ -49,11 +49,32 @@ module.exports = {
             });
 
             try {
-                posts = await Post.find({
-                    community: {
-                        $in: communitiesId
-                    }
-                }).populate('community')
+                let posts
+                if (filter == 'recent') {
+                    posts = await Post.find({
+                        community: {
+                            $in: communitiesId
+                        }
+                    }).sort({ date: -1 }).populate('community')
+                } else if (filter == 'popular') {
+                    posts = await Post.find({
+                        community: {
+                            $in: communitiesId
+                        }
+                    }).sort({ likesCount: -1 }).populate('community')
+                } else if (filter == 'comment') {
+                    posts = await Post.find({
+                        community: {
+                            $in: communitiesId
+                        }
+                    }).sort({ commentsCount: -1 }).populate('community')
+                } else {
+                    posts = await Post.find({
+                        community: {
+                            $in: communitiesId
+                        }
+                    }).populate('community')
+                }
 
                 return posts
 
@@ -62,10 +83,18 @@ module.exports = {
             }
         },
 
-        async getUserCommunityPosts(_, { communityId }) {
+        async getUserCommunityPosts(_, { communityId, filter }) {
 
             try {
-                const posts = await Post.find({ community: communityId }).populate('community')
+                let posts
+                if (filter == 'recent') {
+                    posts = await Post.find({ community: communityId }).sort({ date: -1 }).populate('community')
+                } else if (filter == 'popular') {
+                    posts = await Post.find({ community: communityId }).sort({ likesCount: -1 }).populate('community')
+                } else if (filter == 'comment') {
+                    posts = await Post.find({ community: communityId }).sort({ commentsCount: -1 }).populate('community')
+                }
+
                 return posts
 
             } catch (error) {
@@ -89,6 +118,8 @@ module.exports = {
                     user: payload._id,
                     name: payload.name,
                     community: communityId,
+                    likesCount: 0,
+                    commentsCount: 0,
                     date: new Date().toISOString()
                 }
 
@@ -145,6 +176,12 @@ module.exports = {
 
                     post.comments.unshift(newComment)
                     await post.save()
+
+                    await Post.findOneAndUpdate(
+                        { _id: postId },
+                        { $inc: { commentsCount: 1 } },
+                        { new: true }
+                    )
                     return post
 
                 } else {
@@ -176,6 +213,12 @@ module.exports = {
                     const removeIndex = post.comments.findIndex(comment => comment.id === commentId)
                     post.comments.splice(removeIndex, 1)
                     await post.save()
+
+                    await Post.findOneAndUpdate(
+                        { _id: postId },
+                        { $inc: { commentsCount: -1 } },
+                        { new: true }
+                    )
                     return post
                 }
 
@@ -195,8 +238,20 @@ module.exports = {
                     const removeIndex = post.likes.findIndex(like => like.user.toString() === userId)
                     post.likes.splice(removeIndex, 1)
 
+                    await Post.findOneAndUpdate(
+                        { _id: postId },
+                        { $inc: { likesCount: -1 } },
+                        { new: true }
+                    )
+
                 } else {
                     post.likes.unshift({ user: userId })
+
+                    await Post.findOneAndUpdate(
+                        { _id: postId },
+                        { $inc: { likesCount: 1 } },
+                        { new: true }
+                    )
 
                     if (post.dislikes.find(dislike => dislike.user.toString() === userId)) {
                         const removeIndex = post.dislikes.findIndex(dislike => dislike.user.toString() === userId)
@@ -223,8 +278,20 @@ module.exports = {
                     const removeIndex = post.dislikes.findIndex(dislike => dislike.user.toString() === userId)
                     post.dislikes.splice(removeIndex, 1)
 
+                    await Post.findOneAndUpdate(
+                        { _id: postId },
+                        { $inc: { likesCount: 1 } },
+                        { new: true }
+                    )
+
                 } else {
                     post.dislikes.unshift({ user: userId })
+
+                    await Post.findOneAndUpdate(
+                        { _id: postId },
+                        { $inc: { likesCount: -1 } },
+                        { new: true }
+                    )
 
                     if (post.likes.find(like => like.user.toString() === userId)) {
                         const removeIndex = post.likes.findIndex(like => like.user.toString() === userId)

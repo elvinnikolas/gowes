@@ -31,6 +31,12 @@ const postSchema = new schema({
         type: String,
         required: true
     },
+    likesCount: {
+        type: Number
+    },
+    commentsCount: {
+        type: Number
+    },
     likes: [{
         user: {
             type: schema.Types.ObjectId,

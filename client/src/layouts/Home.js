@@ -16,10 +16,11 @@ function Home() {
     const { auth } = useContext(AuthContext)
     const id = auth._id
     const [communityId, setCommunityId] = useState('000000000000000000000000')
+    const [filterOption, setfilterOption] = useState('recent')
     const [filterCommunity, setFilterCommunity] = useState(false)
 
     let { loading, data, refetch } = useQuery(FETCH_QUERY_HOME, {
-        variables: { id: id, communityId: communityId }
+        variables: { id: id, communityId: communityId, filter: filterOption }
     })
 
     const { getUserCommunities: communities, getUserCommunitiesPosts: allPosts, getUserCommunityPosts: filterPosts } = data ? data : []
@@ -60,7 +61,7 @@ function Home() {
         }
     ]
 
-    const onClickFilter = (e, { value }) => {
+    const onClickFilterCommunity = (e, { value }) => {
         e.persist()
         if (value !== 'all') {
             setFilterCommunity(true)
@@ -69,6 +70,12 @@ function Home() {
             setFilterCommunity(false)
             setCommunityId('000000000000000000000000')
         }
+        refetch()
+    }
+
+    const onClickFilter = (e, { value }) => {
+        e.persist()
+        setfilterOption(value)
         refetch()
     }
 
@@ -89,7 +96,7 @@ function Home() {
                                     selection
                                     options={communityOptions}
                                     defaultValue={communityOptions[0].value}
-                                    onChange={onClickFilter}
+                                    onChange={onClickFilterCommunity}
                                 />
                             </Grid.Column>
                             <Grid.Column>
@@ -99,6 +106,7 @@ function Home() {
                                     selection
                                     options={filterOptions}
                                     defaultValue={filterOptions[0].value}
+                                    onChange={onClickFilter}
                                 />
                             </Grid.Column>
                         </Grid>

@@ -184,7 +184,7 @@ export const GET_USER = gql`
 
 //FETCH QUERIES
 export const FETCH_QUERY_HOME = gql`
-  query($id: ID!, $communityId: ID!) {
+  query($id: ID!, $communityId: ID!, $filter: String!) {
     getUserCommunities(userId: $id) {
         _id
         community {
@@ -193,7 +193,7 @@ export const FETCH_QUERY_HOME = gql`
             bio
         }
     }
-    getUserCommunitiesPosts {
+    getUserCommunitiesPosts(filter: $filter) {
         _id
         user
         name
@@ -225,7 +225,7 @@ export const FETCH_QUERY_HOME = gql`
             name
         }
     }
-    getUserCommunityPosts(communityId: $communityId) {
+    getUserCommunityPosts(communityId: $communityId, filter: $filter) {
         _id
         user
         name
@@ -519,6 +519,20 @@ export const FETCH_QUERY_COMMUNITY = gql`
         }
     }
   }
+`
+
+export const GET_FAQS = gql`
+    query {
+        getFaqs {
+            _id
+            category
+            contents{
+                _id
+                question
+                answer
+            }
+        }
+    }
 `
 
 //MUTATION
