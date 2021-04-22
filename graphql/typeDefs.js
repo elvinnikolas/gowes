@@ -131,6 +131,7 @@ module.exports = gql`
         getBookmarkPosts: [Post]
         getUserCommunityPosts(communityId: ID!, filter: String!): [Post]
         getUserCommunitiesPosts(filter: String): [Post]
+        getExplorePosts(filter: String): [Post]
 
         # user
         getUser(id: ID!): User

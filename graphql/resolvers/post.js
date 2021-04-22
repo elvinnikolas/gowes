@@ -100,6 +100,146 @@ module.exports = {
             } catch (error) {
                 throw new Error(error)
             }
+        },
+
+        async getExplorePosts(_, { filter }) {
+            let newDate = new Date()
+            let month = 6
+            let year = 2020
+            month = month.toString()
+            year = year.toString()
+
+            if (month < 10) {
+                month = '0' + month
+            }
+
+            try {
+                let posts
+                if (filter == 'recent') {
+                    posts = await Post.aggregate(
+                        [
+                            {
+                                '$addFields': {
+                                    'month': {
+                                        '$substr': [
+                                            '$date', 5, 2
+                                        ]
+                                    },
+                                    'year': {
+                                        '$substr': [
+                                            '$date', 0, 4
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$match': {
+                                    'month': month,
+                                    'year': year
+                                }
+                            }, {
+                                '$lookup': {
+                                    'from': 'communities',
+                                    'localField': 'community',
+                                    'foreignField': '_id',
+                                    'as': 'community_docs'
+                                }
+                            }, {
+                                '$project': {
+                                    '_id': 1,
+                                    'user': 1,
+                                    'name': 1,
+                                    'title': 1,
+                                    'date': 1,
+                                    'content': 1,
+                                    'likes': 1,
+                                    'dislikes': 1,
+                                    'comments': 1,
+                                    'bookmarks': 1,
+                                    'community': {
+                                        '$mergeObjects': [
+                                            {
+                                                '$arrayElemAt': [
+                                                    '$community_docs', 0
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$sort': {
+                                    'date': -1
+                                }
+                            }, {
+                                '$limit': 20
+                            }
+                        ]
+                    )
+                } else if (filter == 'popular') {
+                    posts = await Post.aggregate(
+                        [
+                            {
+                                '$addFields': {
+                                    'month': {
+                                        '$substr': [
+                                            '$date', 5, 2
+                                        ]
+                                    },
+                                    'year': {
+                                        '$substr': [
+                                            '$date', 0, 4
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$match': {
+                                    'month': month,
+                                    'year': year
+                                }
+                            }, {
+                                '$lookup': {
+                                    'from': 'communities',
+                                    'localField': 'community',
+                                    'foreignField': '_id',
+                                    'as': 'community_docs'
+                                }
+                            }, {
+                                '$project': {
+                                    '_id': 1,
+                                    'user': 1,
+                                    'name': 1,
+                                    'title': 1,
+                                    'date': 1,
+                                    'content': 1,
+                                    'likes': 1,
+                                    'dislikes': 1,
+                                    'comments': 1,
+                                    'bookmarks': 1,
+                                    'community': {
+                                        '$mergeObjects': [
+                                            {
+                                                '$arrayElemAt': [
+                                                    '$community_docs', 0
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }, {
+                                '$sort': {
+                                    'likesCount': -1
+                                }
+                            }, {
+                                '$limit': 20
+                            }
+                        ]
+                    )
+                }
+
+                return posts
+
+            } catch (error) {
+                throw new Error(error)
+            }
         }
     },
 

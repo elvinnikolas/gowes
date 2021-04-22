@@ -143,6 +143,43 @@ export const GET_USER_COMMUNITIES_POSTS = gql`
   }
 `
 
+export const GET_EXPLORE_POSTS = gql`
+  query {
+    getExplorePosts(filter: $filter) {
+        _id
+        user
+        name
+        title
+        date
+        content
+        likes {
+            _id
+            user
+        }
+        comments {
+            _id
+            user
+            name
+            date
+            comment
+        }
+        dislikes {
+            _id
+            user
+        }
+        bookmarks {
+            _id
+            user
+            date
+        }
+        community {
+            _id
+            name
+        }
+    }
+  }
+`
+
 export const GET_USER_COMMUNITIES = gql`
   query {
     getUserCommunities(userId: $id) {
