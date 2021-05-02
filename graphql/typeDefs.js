@@ -103,6 +103,23 @@ module.exports = gql`
         answer: String!
     }
 
+    type Chat {
+        _id: ID!
+        users: [User]!
+        lastMessage: String!,
+        sent: String!
+    }
+
+    type Message {
+        _id: ID!
+        chat: ID!
+        from: ID!
+        to: ID!
+        content: String!
+        # image: String!
+        sent: String!
+    }
+
     # INPUT
     input RegisterInput {
         name: String!
@@ -149,6 +166,12 @@ module.exports = gql`
 
         # faq
         getFaqs: [Faq]
+
+        #chat
+        getChats: [Chat]
+
+        #message
+        getMessages(chatId: ID!): [Message]
     }
 
     # MUTATION
@@ -240,5 +263,22 @@ module.exports = gql`
         deleteCommunityPost(
             postId: ID!
         ) : String!
+
+        #message
+        sendMessage(
+            chatId: ID! 
+            to: ID!
+            content: String!
+        ): Message
+
+        #chat
+        newChat(
+            to: ID!
+        ): Chat
+    }
+
+    #SUBSCRIPTION
+    type Subscription {
+        newMessage: Message!
     }
 `

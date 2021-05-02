@@ -219,6 +219,33 @@ export const GET_USER = gql`
     }
 `
 
+export const GET_CHATS = gql`
+    query {
+        getChats {
+            _id
+            users {
+                _id
+                name
+            }
+            lastMessage
+            sent 
+        }
+    }
+`
+
+export const GET_MESSAGES = gql`
+    query($chatId: ID!) {
+        getMessages(chatId: $chatId) {
+            _id
+            chat
+            from
+            to
+            content
+            sent
+        }
+    }
+`
+
 //FETCH QUERIES
 export const FETCH_QUERY_HOME = gql`
   query($id: ID!, $communityId: ID!, $filter: String!) {
@@ -843,6 +870,37 @@ export const CREATE_POST = gql`
                 user
                 date
             }
+        }
+    }
+`
+
+export const SEND_MESSAGE = gql`
+  mutation sendMessage(
+      $chatId: ID!
+      $to: ID!
+      $content: String!
+    ) {
+        sendMessage(chatId: $chatId, to: $to, content: $content) {
+            _id
+            chat
+            from
+            to
+            content
+            sent
+        }
+    }
+`
+
+//SUBSCRIPTION
+export const NEW_MESSAGE = gql`
+  subscription newMessage {
+        newMessage{
+            _id
+            chat
+            from
+            to
+            content
+            sent
         }
     }
 `

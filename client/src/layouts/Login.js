@@ -42,7 +42,8 @@ function Login(props) {
   const [login, { loading }] = useMutation(LOGIN_USER, {
     update(_, result) {
       context.login(result.data.login)
-      props.history.push('/')
+      // props.history.push('/')
+      window.location.href = '/'
     },
     onError(error) {
       setErrors(error.graphQLErrors[0].extensions.exception.errors);

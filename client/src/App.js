@@ -29,6 +29,7 @@ import { CreateCommunity } from './layouts/CreateCommunity'
 import { CreateThread } from './layouts/CreateThread'
 import { ThreadDetail } from './layouts/ThreadDetail'
 import Faq from './layouts/Faq'
+import Chat from './layouts/Chat'
 
 //route
 import AuthRoute from './routes/AuthRoute'
@@ -55,6 +56,7 @@ const App = () => {
               <PrivateRoute path="/create-community" component={CreateCommunity} />
               <PrivateRoute path="/create-thread/:id" component={CreateThread} />
               <PrivateRoute path="/thread/:id" component={ThreadDetail} />
+              <PrivateRoute path="/chat" component={Chat} />
               <Route path="/faq" component={Faq} />
             </Switch>
           </Layout>
