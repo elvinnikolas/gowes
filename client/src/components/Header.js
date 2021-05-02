@@ -10,7 +10,7 @@ import {
     LEAVE_MEMBER,
     GET_COMMUNITIES
 } from '../util/graphql'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 
 const Styles = styled.div`

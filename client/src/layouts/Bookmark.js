@@ -4,7 +4,7 @@ import Spinner from '../components/Spinner'
 import { ThreadExplore } from '../components/Thread'
 import styled from 'styled-components'
 
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { GET_BOOKMARK_POSTS } from '../util/graphql'
 
 const Styles = styled.div`
@@ -63,15 +63,15 @@ function BookmarkThread() {
                             {loading ? (
                                 <Spinner />
                             ) : (
-                                    <Transition.Group>
-                                        {
-                                            posts &&
-                                            posts.map(post => (
-                                                <ThreadExplore key={post._id} post={post} />
-                                            ))
-                                        }
-                                    </Transition.Group>
-                                )}
+                                <Transition.Group>
+                                    {
+                                        posts &&
+                                        posts.map(post => (
+                                            <ThreadExplore key={post._id} post={post} />
+                                        ))
+                                    }
+                                </Transition.Group>
+                            )}
                         </Item.Group>
 
                     </Segment>

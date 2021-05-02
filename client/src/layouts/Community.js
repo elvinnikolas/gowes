@@ -11,7 +11,7 @@ import { faPlus, faStream } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { FETCH_QUERY_COMMUNITY } from '../util/graphql'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 
 export function Community(props) {

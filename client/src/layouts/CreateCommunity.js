@@ -5,7 +5,7 @@ import { Button, Form, Dropdown, Header, Icon, Grid, Segment } from 'semantic-ui
 import styled from 'styled-components'
 
 import { CREATE_COMMUNITY } from '../util/graphql'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { GET_COMMUNITIES } from '../util/graphql'
 
 const Styles = styled.div`

@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CommunityCard } from '../components/CardList'
 import { SidebarExplore } from '../components/Sidebar'
 
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { GET_COMMUNITIES } from '../util/graphql'
 
 const Styles = styled.div`

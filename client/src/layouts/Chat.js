@@ -6,7 +6,7 @@ import Moment from 'react-moment'
 import styled from 'styled-components'
 import classNames from 'classnames'
 
-import { useMutation, useQuery, useLazyQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery, useLazyQuery } from '@apollo/client'
 import { useSubscription } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 import { GET_CHATS, GET_MESSAGES, SEND_MESSAGE, NEW_MESSAGE } from '../util/graphql'

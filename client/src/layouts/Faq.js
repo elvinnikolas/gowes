@@ -4,7 +4,7 @@ import _ from 'lodash'
 import Spinner from '../components/Spinner'
 import styled from 'styled-components'
 
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { GET_FAQS } from '../util/graphql'
 
 const Styles = styled.div`

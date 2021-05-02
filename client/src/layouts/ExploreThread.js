@@ -5,7 +5,7 @@ import { ThreadExplore } from '../components/Thread'
 import Spinner from '../components/Spinner'
 import styled from 'styled-components'
 
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 import { GET_EXPLORE_POSTS } from '../util/graphql'
 

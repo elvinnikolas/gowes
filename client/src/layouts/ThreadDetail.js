@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import Spinner from '../components/Spinner'
 import profileImage from '../assets/profile.jpg'
 
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 import {
     GET_POSTS,

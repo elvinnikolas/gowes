@@ -31,7 +31,7 @@ import {
     APPOINT_ADMIN,
     REMOVE_MEMBER
 } from '../util/graphql'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 
 const Styles = styled.div`

@@ -10,7 +10,7 @@ import profileImage from '../assets/profile.jpg'
 import bike from '../assets/bike.jpg'
 
 import { AuthContext } from '../context/auth'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { FETCH_QUERY_PROFILE } from '../util/graphql'
 
 const Styles = styled.div`

@@ -6,7 +6,7 @@ import Spinner from '../components/Spinner'
 import profile from '../assets/profile.jpg'
 
 import { DELETE_COMMENT, ADD_COMMENT } from '../util/graphql'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 
 const Styles = styled.div`
 

@@ -6,7 +6,7 @@ import moment from 'moment'
 import styled from 'styled-components'
 import profileImage from '../assets/profile.jpg'
 
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 
 import {

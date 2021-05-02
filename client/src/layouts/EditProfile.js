@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import Spinner from '../components/Spinner'
 
 import gql from 'graphql-tag'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 
 import { AuthContext } from '../context/auth'
 import { useForm } from '../util/hooks'
