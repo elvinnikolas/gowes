@@ -103,11 +103,18 @@ module.exports = gql`
         answer: String!
     }
 
+    type Status {
+        _id: ID!
+        user: ID!
+        read: Boolean!
+    }
+
     type Chat {
         _id: ID!
         users: [User]!
         lastMessage: String!,
-        sent: String!
+        sent: String!,
+        status: [Status]!
     }
 
     type Message {

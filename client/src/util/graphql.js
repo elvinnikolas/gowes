@@ -227,8 +227,12 @@ export const GET_CHATS = gql`
                 _id
                 name
             }
+            status {
+                user
+                read
+            }
             lastMessage
-            sent 
+            sent
         }
     }
 `
@@ -887,6 +891,16 @@ export const SEND_MESSAGE = gql`
             to
             content
             sent
+        }
+    }
+`
+
+export const NEW_CHAT = gql`
+  mutation newChat(
+      $to: ID!
+    ) {
+        newChat(to: $to) {
+            _id
         }
     }
 `

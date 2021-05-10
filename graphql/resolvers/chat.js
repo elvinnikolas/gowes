@@ -23,16 +23,29 @@ module.exports = {
         async newChat(_, { to }, context) {
             const payload = auth(context)
 
-            try {
-                const newChat = {
-                    users: [payload._id, to],
-                    lastMessage: '',
-                    sent: new Date().toISOString()
-                }
-                const chat = new Chat(newChat)
-                await chat.save()
+            let chat
+            const chatExist = await Chat.findOne({ users: [payload._id, to] })
 
-                context.pubsub.publish('NEW_CHAT', { newChat: chat })
+            try {
+                if (!chatExist) {
+                    const newChat = {
+                        users: [payload._id, to],
+                        lastMessage: '',
+                        sent: new Date().toISOString(),
+                        status: [{
+                            'user': payload._id,
+                            'read': false
+                        }, {
+                            'user': to,
+                            'read': false
+                        }]
+                    }
+                    chat = new Chat(newChat)
+                    await chat.save()
+
+                } else {
+                    chat = chatExist
+                }
 
                 return chat
 

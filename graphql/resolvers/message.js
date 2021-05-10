@@ -5,8 +5,15 @@ const { AuthenticationError, withFilter } = require('apollo-server')
 
 module.exports = {
     Query: {
-        async getMessages(_, { chatId }) {
+        async getMessages(_, { chatId }, context) {
+            const payload = auth(context)
+
             try {
+                await Chat.findOneAndUpdate(
+                    { _id: chatId, "status.user": payload._id },
+                    { $set: { "status.$.read": true } },
+                    { new: true })
+
                 const messages = await Message
                     .find({ chat: chatId })
                     .sort({ sent: -1 })
@@ -63,6 +70,16 @@ module.exports = {
                         },
                         { new: true })
 
+                    await Chat.findOneAndUpdate(
+                        { _id: chatId, "status.user": to },
+                        { $set: { "status.$.read": false } },
+                        { new: true })
+
+                    await Chat.findOneAndUpdate(
+                        { _id: chatId, "status.user": payload._id },
+                        { $set: { "status.$.read": true } },
+                        { new: true })
+
                     const newMessage = {
                         chat: chatId,
                         from: payload._id,
@@ -86,16 +103,22 @@ module.exports = {
     },
 
     Subscription: {
+        // newMessage: {
+        //     subscribe: withFilter((_, __, context) => {
+        //         return context.pubsub.asyncIterator(['NEW_MESSAGE'])
+        //     }, ({ newMessage }, _, context) => {
+        //         if (newMessage.from === context._id || newMessage.to === context._id) {
+        //             return true
+        //         } else {
+        //             return false
+        //         }
+        //     })
+        // }
+
         newMessage: {
-            subscribe: withFilter((_, __, context) => {
+            subscribe: (_, __, context) => {
                 return context.pubsub.asyncIterator(['NEW_MESSAGE'])
-            }, ({ newMessage }, _, context) => {
-                if (newMessage.from === context._id || newMessage.to === context._id) {
-                    return true
-                } else {
-                    return false
-                }
-            })
+            }
         }
     }
 }

@@ -12,7 +12,16 @@ const chatSchema = new schema({
     },
     sent: {
         type: String
-    }
+    },
+    status: [{
+        user: {
+            type: schema.Types.ObjectId,
+            ref: 'user'
+        },
+        read: {
+            type: Boolean
+        }
+    }]
 })
 
 module.exports = Chat = model('chat', chatSchema)

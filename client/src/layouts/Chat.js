@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
-import { Grid, Segment, Menu, Feed, Icon, Label, Header, Input, Divider, Form, TextArea, Button } from 'semantic-ui-react'
+import { Grid, Segment, Menu, Feed, Icon, Label, Header, Input, Form, Button, Popup } from 'semantic-ui-react'
 
 import Spinner from '../components/Spinner'
 import Moment from 'react-moment'
@@ -55,8 +55,10 @@ function Chat() {
     const { data: newMessageData } = useSubscription(NEW_MESSAGE)
 
     useEffect(() => {
-        if (newMessageData) {
+        if (newMessageData && newMessageData.newMessage.chat == selectedChat) {
             messagesRefetch()
+            refetch()
+        } else {
             refetch()
         }
     }, [newMessageData])
@@ -137,40 +139,62 @@ function Chat() {
 
     } else if (chats.length > 0) {
         chatsContent = chats.map((chat) => (
-            <Menu.Item
-                onClick={
-                    () => {
-                        chat.users.map(user =>
-                            user._id !== id ? (
-                                setSelectedUser(user._id),
-                                setSelectedName(user.name)
-                            ) : []
-                        )
-                        setSelectedChat(chat._id)
-                    }
-                }
-            >
-                <Label color='green' circular empty />
-                <Feed size='medium'>
-                    <Feed.Event>
-                        <Feed.Label image={profileImage} />
-                        <Feed.Content>
+            chat.users[1]._id == id && chat.lastMessage == '' ?
+                [] : (
+                    <Popup
+                        content={
+                            <>
+                                <Moment format='DD/MM/YY'>{chat.sent}</Moment>
+                                <br></br>
+                                <Moment format='HH:mm'>{chat.sent}</Moment>
+                            </>
+                        }
+                        position='left center'
+                        size='small'
+                        inverted
+                        trigger={<Menu.Item
+                            onClick={
+                                () => {
+                                    chat.users.map(user =>
+                                        user._id !== id ? (
+                                            setSelectedUser(user._id),
+                                            setSelectedName(user.name)
+                                        ) : []
+                                    )
+                                    setSelectedChat(chat._id)
+                                }
+                            }
+                        >
                             {
-                                chat.users.map(user =>
-                                    user._id !== id ? (
-                                        <Feed.Summary>{user.name}</Feed.Summary>
+                                chat.status.map(status =>
+                                    status.user == id && status.read == false ? (
+                                        <Label color='green' circular empty />
                                     ) : []
                                 )
                             }
-                            {/* <br></br> */}
-                            {/* <Feed.Date>{<Moment format='HH:mm'>{chat.sent}</Moment>}</Feed.Date> */}
-                            <Feed.Extra text>
-                                {chat.lastMessage}
-                            </Feed.Extra>
-                        </Feed.Content>
-                    </Feed.Event>
-                </Feed>
-            </Menu.Item >
+                            <Feed size='medium'>
+                                <Feed.Event>
+                                    <Feed.Label image={profileImage} />
+                                    <Feed.Content>
+                                        {
+                                            chat.users.map(user =>
+                                                user._id !== id ? (
+                                                    <Feed.Summary>{user.name}</Feed.Summary>
+                                                ) : []
+                                            )
+                                        }
+                                        {/* <br></br>
+                                <Feed.Date>{<Moment format='DD/MM/YY HH:mm'>{chat.sent}</Moment>}</Feed.Date> */}
+                                        <Feed.Extra text>
+                                            {chat.lastMessage}
+                                        </Feed.Extra>
+                                    </Feed.Content>
+                                </Feed.Event>
+                            </Feed>
+                        </Menu.Item>
+                        }
+                    />
+                )
         ))
     }
 
@@ -209,25 +233,53 @@ function Chat() {
                                     messagesData.getMessages.length > 0 ? (
                                     messagesData.getMessages.map((message) =>
                                         message.from == id ? (
-                                            <Grid>
-                                                <Grid.Column style={{ padding: 0, margin: 0 }}>
-                                                    <Segment basic compact floated='right'>
-                                                        <Label size='large' color='blue' pointing='right' style={messageStyle}>
-                                                            {message.content}
-                                                        </Label>
-                                                    </Segment>
-                                                </Grid.Column>
-                                            </Grid>
+                                            <Popup
+                                                content={
+                                                    <>
+                                                        <Moment format='DD/MM/YY'>{message.sent}</Moment>
+                                                        <br></br>
+                                                        <Moment format='HH:mm'>{message.sent}</Moment>
+                                                    </>
+                                                }
+                                                position='right center'
+                                                inverted
+                                                size='mini'
+                                                trigger={
+                                                    <Grid>
+                                                        <Grid.Column style={{ padding: 0, margin: 0 }}>
+                                                            <Segment basic compact floated='right'>
+                                                                <Label size='large' color='blue' pointing='right' style={messageStyle}>
+                                                                    {message.content}
+                                                                </Label>
+                                                            </Segment>
+                                                        </Grid.Column>
+                                                    </Grid>
+                                                }
+                                            />
                                         ) : (
-                                            <Grid>
-                                                <Grid.Column style={{ padding: 0, margin: 0 }}>
-                                                    <Segment basic compact floated='left'>
-                                                        <Label size='large' basic pointing='left' style={messageStyle}>
-                                                            {message.content}
-                                                        </Label>
-                                                    </Segment>
-                                                </Grid.Column>
-                                            </Grid>
+                                            <Popup
+                                                content={
+                                                    <>
+                                                        <Moment format='DD/MM/YY'>{message.sent}</Moment>
+                                                        <br></br>
+                                                        <Moment format='HH:mm'>{message.sent}</Moment>
+                                                    </>
+                                                }
+                                                position='left center'
+                                                inverted
+                                                size='mini'
+                                                trigger={
+                                                    <Grid>
+                                                        <Grid.Column style={{ padding: 0, margin: 0 }}>
+                                                            <Segment basic compact floated='left'>
+                                                                <Label size='large' basic pointing='left' style={messageStyle}>
+                                                                    {message.content}
+                                                                </Label>
+                                                            </Segment>
+                                                        </Grid.Column>
+                                                    </Grid>
+                                                }
+                                            />
                                         )
                                     )
                                 ) : []

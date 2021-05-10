@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
-import { Grid, Segment, Label, Image, Item, Divider, Card, Icon, Header, Transition, Button } from 'semantic-ui-react'
+import { Link, useHistory } from 'react-router-dom'
+import { Grid, Segment, Label, Image, Item, Divider, Card, Icon, Header, Transition, Button, Container } from 'semantic-ui-react'
 
 import styled from 'styled-components'
 import { ThreadExplore } from '../components/Thread'
@@ -10,8 +10,8 @@ import profileImage from '../assets/profile.jpg'
 import bike from '../assets/bike.jpg'
 
 import { AuthContext } from '../context/auth'
-import { useQuery } from '@apollo/client'
-import { FETCH_QUERY_PROFILE } from '../util/graphql'
+import { useQuery, useMutation } from '@apollo/client'
+import { FETCH_QUERY_PROFILE, GET_CHATS, NEW_CHAT } from '../util/graphql'
 
 const Styles = styled.div`
 
@@ -136,13 +136,28 @@ export function UserProfile() {
 
 export function Profile(props) {
 
+    const { auth } = useContext(AuthContext)
+    let userId = auth._id
+
     let id = props.match.params.id
-    console.log(id)
+
+    let history = useHistory()
 
     const { loading, data } = useQuery(FETCH_QUERY_PROFILE, {
         variables: { id }
     })
     const { getUser: user, getUserPosts: posts, getUserCommunities: communities } = data ? data : []
+
+    const [newChat] = useMutation(NEW_CHAT, {
+        variables: { to: id },
+        update() {
+            history.push('/chat')
+        },
+        refetchQueries: [{
+            query: GET_CHATS
+        }],
+        awaitRefetchQueries: true
+    })
 
     if (loading) {
         return (
@@ -189,6 +204,15 @@ export function Profile(props) {
                                             </Card.Description>
                                         </Card.Content>
                                     </Card>
+                                    <br></br>
+                                    {userId !== id ?
+                                        <Container textAlign='center'>
+                                            <Button primary onClick={() => newChat()}>
+                                                <Icon name='chat' />
+                                            Send message
+                                        </Button>
+                                        </Container> : []
+                                    }
                                 </Card.Group>
                             </Grid.Column>
 
