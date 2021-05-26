@@ -1,11 +1,13 @@
 import React, { useContext, useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import { Feed, Image, Icon, Button, Comment, Header, Confirm, Grid, Segment } from 'semantic-ui-react'
+import { useHistory, Link } from 'react-router-dom'
+import { Feed, Image, Icon, Button, Comment, Header, Divider, Confirm, Grid, Segment } from 'semantic-ui-react'
 import { CommentThread, CreateComment } from '../components/Comment'
 import Moment from 'react-moment'
 import styled from 'styled-components'
 import Spinner from '../components/Spinner'
-import profileImage from '../assets/profile.jpg'
+import bikeImage from '../assets/bike.jpg'
+import gowesImage from '../assets/gowes.jpg'
+import { Slide } from 'react-slideshow-image'
 
 import { useMutation, useQuery } from '@apollo/client'
 import { AuthContext } from '../context/auth'
@@ -20,8 +22,35 @@ import {
 
 const Styles = styled.div`
     .paragraph {
-        font-size: 16px;
+        font-size: 17px;
         white-space: pre-line;
+        text-align: justify;
+    }
+
+    .each-slide {
+        display: flex;
+        width: 100%;
+        height: 500px;
+      }
+      
+      .each-slide > div {
+        width: 100%;
+      }
+      
+      .each-slide > img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+    .each-slide span {
+        padding: 20px;
+        font-size: 20px;
+        background: #efefef;
+        text-align: center;
     }
 `
 
@@ -63,7 +92,12 @@ export function ThreadDetail(props) {
             <Spinner />
         )
     } else {
-        const { _id, user, name, date, title, content, likes, dislikes, comments, bookmarks } = getPost
+        const { _id, user, date, title, content, images, likes, dislikes, comments, bookmarks } = getPost
+        const sliderProperties = {
+            autoplay: true,
+            indicators: true,
+            pauseOnHover: true
+        }
 
         return (
             <Styles>
@@ -77,14 +111,15 @@ export function ThreadDetail(props) {
                         <Segment>
                             <Feed>
                                 <Feed.Event>
-                                    <Feed.Label image={profileImage} />
+                                    <Feed.Label image={user.image} />
                                     <Feed.Content>
                                         <Feed.Summary>
-                                            <Feed.User>{name}</Feed.User>
+                                            <Link to={`/profile/${user._id}`}>
+                                                <Feed.User><h3>{user.name}</h3></Feed.User>
+                                            </Link>
                                         </Feed.Summary>
-                                        <Feed.Summary>
-                                            <Feed.Date><Moment format='MMMM Do YYYY, h:mm'>{date}</Moment></Feed.Date>
-                                        </Feed.Summary>
+                                        <br></br>
+                                        <Feed.Date><h3>Posted on: <Moment format='DD MMMM YYYY, hh:mm'>{date}</Moment></h3></Feed.Date>
                                     </Feed.Content>
                                 </Feed.Event>
                             </Feed>
@@ -102,7 +137,7 @@ export function ThreadDetail(props) {
                                 />)
                             }
 
-                            {auth && auth._id === user && (
+                            {auth && auth._id === user._id && (
                                 <>
                                     <Button negative size='tiny' floated='right' icon='trash'
                                         onClick={() => setConfirmOpen(true)}
@@ -147,31 +182,182 @@ export function ThreadDetail(props) {
                         </Segment>
 
                         <br></br>
-                        <Image src='https://react.semantic-ui.com/images/wireframe/image.png' size='large' />
+                        {images.length > 0 ?
+                            images.length > 1 ?
+                                <Slide {...sliderProperties} easing="ease">
+                                    {images.map(image =>
+                                        <div className="each-slide">
+                                            <img src={image} />
+                                        </div>
+                                    )}
+                                </Slide> :
+                                images.map(image =>
+                                    <div className="each-slide">
+                                        <img src={image} />
+                                    </div>
+                                )
+                            : []
+                        }
 
                         <br></br>
                         <p className="paragraph">{content}</p>
 
                         <br></br>
+                        <Divider horizontal>
+                            <Header as='h2' textAlign='center'>
+                                <Icon name='comment alternate outline' />
+                                Comment
+                            </Header>
+                        </Divider>
                         <Comment.Group>
                             <Header as='h3' dividing>
                                 Add Comment
                             </Header>
-                            <CreateComment postId={_id}></CreateComment>
+                            <CreateComment
+                                postId={_id}
+                                refetch={refetch}
+                            />
                         </Comment.Group>
                         <Comment.Group size='large'>
                             <Header as='h3' dividing>
                                 Comments
                             </Header>
-                            {comments.map(comment => (
-                                <CommentThread
-                                    key={comment._id}
-                                    comment={comment}
-                                    userId={auth._id}
-                                    postId={_id}
-                                    refetch={refetch}
-                                />
-                            ))}
+                            {comments.length > 0 ?
+                                comments.map(comment => (
+                                    <CommentThread
+                                        key={comment._id}
+                                        comment={comment}
+                                        userId={auth._id}
+                                        postId={_id}
+                                        refetch={refetch}
+                                    />
+                                )) : (
+                                    <Segment placeholder>
+                                        <Header icon>
+                                            <Icon name='comment alternate outline' />
+                                                No comments yet
+                                            </Header>
+                                    </Segment>
+                                )
+                            }
+                        </Comment.Group>
+
+                    </Grid.Column>
+
+                    <Grid.Column>
+                    </Grid.Column>
+                </Grid>
+            </Styles >
+        )
+    }
+}
+
+export function ThreadDetailGuest(props) {
+    const postId = props.match.params.id
+
+    const { loading, data, refetch } = useQuery(GET_POST, {
+        variables: { postId }
+    })
+    const { getPost } = data ? data : []
+
+    if (loading) {
+        return (
+            <Spinner />
+        )
+    } else {
+        const { _id, user, date, title, content, images, likes, dislikes, comments, bookmarks } = getPost
+        const sliderProperties = {
+            autoplay: true,
+            indicators: true,
+            pauseOnHover: true
+        }
+
+        return (
+            <Styles>
+                <Grid columns='equal'>
+                    <Grid.Column>
+                    </Grid.Column>
+
+                    <Grid.Column width={10}>
+                        <h1>{title}</h1>
+
+                        <Segment>
+                            <Feed>
+                                <Feed.Event>
+                                    <Feed.Label image={user.image} />
+                                    <Feed.Content>
+                                        <Feed.Summary>
+                                            <Feed.User><h3>{user.name}</h3></Feed.User>
+                                        </Feed.Summary>
+                                        <br></br>
+                                        <Feed.Date><h3>Posted on: <Moment format='DD MMMM YYYY, hh:mm'>{date}</Moment></h3></Feed.Date>
+                                    </Feed.Content>
+                                </Feed.Event>
+                            </Feed>
+
+                            <Button.Group basic>
+                                <Button size='tiny' basic color='white'>
+                                    <Icon name='thumbs up' /> {likes.length}
+                                </Button>
+                                <Button size='tiny' basic color='white'>
+                                    <Icon name='thumbs down' /> {dislikes.length}
+                                </Button>
+                                <Button size='tiny' basic color='white'>
+                                    <Icon name='comment' /> {comments.length}
+                                </Button>
+                            </Button.Group>
+                        </Segment>
+
+                        <br></br>
+                        {images.length > 0 ?
+                            images.length > 1 ?
+                                <Slide {...sliderProperties} easing="ease">
+                                    {images.map(image =>
+                                        <div className="each-slide">
+                                            <img src={image} />
+                                        </div>
+                                    )}
+                                </Slide> :
+                                images.map(image =>
+                                    <div className="each-slide">
+                                        <img src={image} />
+                                    </div>
+                                )
+                            : []
+                        }
+
+                        <br></br>
+                        <p className="paragraph">{content}</p>
+
+                        <br></br>
+                        <Divider horizontal>
+                            <Header as='h2' textAlign='center'>
+                                <Icon name='comment alternate outline' />
+                                Comment
+                            </Header>
+                        </Divider>
+                        <Comment.Group size='large'>
+                            <Header as='h3' dividing>
+                                Comments
+                            </Header>
+                            {comments.length > 0 ?
+                                comments.map(comment => (
+                                    <CommentThread
+                                        key={comment._id}
+                                        comment={comment}
+                                        userId='guest'
+                                        postId={_id}
+                                        refetch={refetch}
+                                    />
+                                )) : (
+                                    <Segment placeholder>
+                                        <Header icon>
+                                            <Icon name='comment alternate outline' />
+                                                No comments yet
+                                            </Header>
+                                    </Segment>
+                                )
+                            }
                         </Comment.Group>
 
                     </Grid.Column>

@@ -15,6 +15,68 @@ module.exports = {
             }
         },
 
+        async getFilterCommunities(_, { filter, location, sort }) {
+            try {
+                let communities
+
+                if (filter == '' && location == '' && sort == '') {
+                    communities = await Community.find().sort({ date: -1 })
+
+                } else {
+                    if (filter && location) {
+                        if (sort == 'member') {
+                            communities = await Community.find({
+                                $and: [
+                                    { name: { $regex: filter, $options: 'i' } },
+                                    { province: { $regex: location, $options: 'i' } }
+                                ]
+                            }).sort({ memberCount: -1 })
+                        } else {
+                            communities = await Community.find({
+                                $and: [
+                                    { name: { $regex: filter, $options: 'i' } },
+                                    { province: { $regex: location, $options: 'i' } }]
+                            }).sort({ date: -1 })
+                        }
+
+                    } else if (filter) {
+                        if (sort == 'member') {
+                            communities = await Community
+                                .find({ name: { $regex: filter, $options: 'i' } })
+                                .sort({ memberCount: -1 })
+                        } else {
+                            communities = await Community
+                                .find({ name: { $regex: filter, $options: 'i' } })
+                                .sort({ date: -1 })
+                        }
+
+                    } else if (location) {
+                        if (sort == 'member') {
+                            communities = await Community
+                                .find({ province: { $regex: location, $options: 'i' } })
+                                .sort({ memberCount: -1 })
+                        } else {
+                            communities = await Community
+                                .find({ province: { $regex: location, $options: 'i' } })
+                                .sort({ date: -1 })
+                        }
+
+                    } else {
+                        if (sort == 'member') {
+                            communities = await Community.find().sort({ memberCount: -1 })
+                        } else {
+                            communities = await Community.find().sort({ date: -1 })
+                        }
+                    }
+                }
+
+                return communities
+
+            } catch (error) {
+                throw new Error(error)
+            }
+        },
+
         async getCommunity(_, { communityId }) {
             try {
                 const community = await Community.findById(communityId)
@@ -31,7 +93,7 @@ module.exports = {
 
         async getCommunityPosts(_, { communityId }) {
             try {
-                const posts = await Post.find({ community: communityId })
+                const posts = await Post.find({ community: communityId }).sort({ date: -1 }).populate('community user').populate('comments.user')
 
                 if (!posts) {
                     throw new Error(error)
@@ -137,7 +199,7 @@ module.exports = {
     },
 
     Mutation: {
-        async createCommunity(_, { communityInput: { name, bio, city, province, isPrivate } }, context) {
+        async createCommunity(_, { communityInput: { name, bio, city, province, isPrivate, image } }, context) {
 
             const payload = auth(context)
 
@@ -151,6 +213,7 @@ module.exports = {
                     bio,
                     city,
                     province,
+                    image,
                     isPrivate,
                     isActive: false,
                     memberCount: 1,
@@ -173,7 +236,7 @@ module.exports = {
                             const member = new Member(newMember)
                             await member.save()
                         }
-                    );
+                    )
                 return community
 
             } catch (error) {
@@ -181,7 +244,7 @@ module.exports = {
             }
         },
 
-        async requestJoinCommunity(_, { communityId }, context) {
+        async requestJoinCommunity(_, { communityId, message }, context) {
             const payload = auth(context)
 
             let community = await Community.findById(communityId)
@@ -191,6 +254,7 @@ module.exports = {
                     const newMember = {
                         community: communityId,
                         user: payload._id,
+                        message: message,
                         isAdmin: false,
                         isJoin: false,
                         isRequest: true,
@@ -263,6 +327,7 @@ module.exports = {
                 if (community) {
                     if (community.memberCount <= 1) {
                         await community.remove()
+                        await Post.deleteMany({ community: communityId })
 
                         if (member) {
                             await member.remove()
@@ -406,7 +471,7 @@ module.exports = {
         async deleteCommunityPost(_, { postId }, context) {
             const payload = auth(context)
             const userId = payload._id
-            const post = await Post.findById(postId)
+            const post = await Post.findById(postId).populate('community user').populate('comments.user')
             const communityId = post.community
             const member = await Member.findOne({ user: userId, community: communityId })
 

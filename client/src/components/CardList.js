@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom'
 import { Card, Icon, Image, Label, Button } from 'semantic-ui-react'
 import styled from 'styled-components'
 
-import bike from '../assets/bike.jpg'
-
 const Styles = styled.div`
     .link-default {
         color: 'inherit';
@@ -13,21 +11,29 @@ const Styles = styled.div`
 `
 
 export function CommunityCard({
-    community: { _id, name, city, province, memberCount }
+    community: { _id, name, city, province, image, memberCount },
+    guest
 }) {
     return (
         <Card>
             <Image
-                src={bike}
+                src={image}
                 wrapped
             />
             <Card.Content textAlign='center'>
                 <Card.Header>
-                    <Link to={`/community/${_id}`}
-                        style={{ color: 'inherit', textDecoration: 'inherit' }}
-                    >
-                        {name}
-                    </Link>
+                    {guest == 'true' ?
+                        <Link to={`/community-guest/${_id}`}
+                            style={{ color: 'inherit', textDecoration: 'inherit' }}
+                        >
+                            {name}
+                        </Link> :
+                        <Link to={`/community/${_id}`}
+                            style={{ color: 'inherit', textDecoration: 'inherit' }}
+                        >
+                            {name}
+                        </Link>
+                    }
                 </Card.Header>
                 <Card.Description>
                     <Label size='small'>

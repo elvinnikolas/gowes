@@ -1,21 +1,21 @@
 import React, { createRef, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Container, Ref, Grid, Sticky } from 'semantic-ui-react'
+import { Container, Ref, Grid, Sticky, Divider } from 'semantic-ui-react'
 
-import { HeaderCommunity } from '../components/Header'
-import { MenuCommunity } from '../components/Menu'
+import { HeaderCommunity, HeaderCommunityGuest } from '../components/Header'
+import { MenuCommunity, MenuCommunityGuest } from '../components/Menu'
 import Spinner from '../components/Spinner'
 import { Fab, Action } from 'react-tiny-fab';
 
 import { faPlus, faStream } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { FETCH_QUERY_COMMUNITY } from '../util/graphql'
+import { FETCH_QUERY_COMMUNITY, FETCH_QUERY_COMMUNITY_GUEST } from '../util/graphql'
 import { useQuery } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 
 export function Community(props) {
-    const contextRef = React.createRef();
+    const contextRef = React.createRef()
 
     const { auth } = useContext(AuthContext)
     const userId = auth._id
@@ -39,21 +39,34 @@ export function Community(props) {
     } else {
 
         return (
-            <Grid columns='equal'>
-                <Grid.Column>
-                </Grid.Column>
+            <Ref innerRef={contextRef}>
+                <Container>
+                    <Grid columns='equal'>
+                        <Grid.Column>
+                        </Grid.Column>
 
-                <Grid.Column width={14}>
-
-                    <Ref innerRef={contextRef}>
-                        <Container>
+                        <Grid.Column width={10}>
                             <HeaderCommunity
                                 details={details}
                                 status={status}
                                 members={members}
                                 posts={posts}
                             />
-                            <br></br>
+                        </Grid.Column>
+
+                        <Grid.Column>
+                        </Grid.Column>
+                    </Grid>
+
+                    <Divider hidden />
+                    <Divider hidden />
+                    <Divider hidden />
+
+                    <Grid columns='equal'>
+                        <Grid.Column>
+                        </Grid.Column>
+
+                        <Grid.Column width={14}>
                             <MenuCommunity
                                 details={details}
                                 status={status}
@@ -61,30 +74,93 @@ export function Community(props) {
                                 members={members}
                                 requests={requests}
                                 refetch={refetch}
+                                contextRef={contextRef}
+                            />
+                        </Grid.Column>
+
+                        <Grid.Column>
+                        </Grid.Column>
+
+                    </Grid>
+
+                    <Fab
+                        icon={<FontAwesomeIcon icon={faPlus} />}
+                        mainButtonStyles={fab_styles}
+                    >
+                        <Link to={`/create-thread/${communityId}`}>
+                            <Action
+                                text="Create Thread"
+                                style={fab_styles}
+                            >
+                                <FontAwesomeIcon icon={faStream} />
+                            </Action>
+                        </Link>
+                    </Fab>
+                </Container>
+            </Ref>
+        )
+    }
+}
+
+export function CommunityGuest(props) {
+    const contextRef = React.createRef()
+
+    const communityId = props.match.params.id
+
+    const { loading, data } = useQuery(FETCH_QUERY_COMMUNITY_GUEST, {
+        variables: { communityId }
+    })
+    const {
+        getCommunity: details,
+        getCommunityPosts: posts
+    } = data ? data : []
+
+    if (loading) {
+        return (
+            <Spinner />
+        )
+    } else {
+
+        return (
+            <Ref innerRef={contextRef}>
+                <Container>
+                    <Grid columns='equal'>
+                        <Grid.Column>
+                        </Grid.Column>
+
+                        <Grid.Column width={10}>
+                            <HeaderCommunityGuest
+                                details={details}
+                                posts={posts}
+                            />
+                        </Grid.Column>
+
+                        <Grid.Column>
+                        </Grid.Column>
+                    </Grid>
+
+                    <Divider hidden />
+                    <Divider hidden />
+                    <Divider hidden />
+
+                    <Grid columns='equal'>
+                        <Grid.Column>
+                        </Grid.Column>
+
+                        <Grid.Column width={14}>
+                            <MenuCommunityGuest
+                                details={details}
+                                posts={posts}
                                 contextref={contextRef}
                             />
+                        </Grid.Column>
 
-                            <Fab
-                                icon={<FontAwesomeIcon icon={faPlus} />}
-                                mainButtonStyles={fab_styles}
-                            >
-                                <Link to={`/create-thread/${communityId}`}>
-                                    <Action
-                                        text="Create Thread"
-                                        style={fab_styles}
-                                    >
-                                        <FontAwesomeIcon icon={faStream} />
-                                    </Action>
-                                </Link>
-                            </Fab>
-                        </Container>
-                    </Ref>
+                        <Grid.Column>
+                        </Grid.Column>
 
-                </Grid.Column>
-
-                <Grid.Column>
-                </Grid.Column>
-            </Grid>
+                    </Grid>
+                </Container>
+            </Ref>
         )
     }
 }

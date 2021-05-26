@@ -5,11 +5,15 @@ export const GET_POSTS = gql`
     query {
         getPosts {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             date
             title
             content
+            images
             likes{
                 _id
                 user
@@ -25,7 +29,11 @@ export const GET_POSTS = gql`
             }
             comments{
                 _id
-                user
+                user {
+                    _id
+                    name
+                    image
+                }
                 comment
             }
             community {
@@ -40,19 +48,26 @@ export const GET_POST = gql`
   query($postId: ID!) {
       getPost(postId: $postId) {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             title
             date
             content
+            images
             likes {
                 _id
                 user
             }
             comments {
                 _id
-                user
-                name
+                user {
+                    _id
+                    name
+                    image
+                }
                 date
                 comment
             }
@@ -70,22 +85,29 @@ export const GET_POST = gql`
 `
 
 export const GET_BOOKMARK_POSTS = gql`
-  query {
-      getBookmarkPosts {
+  query($filter: String!) {
+      getBookmarkPosts(filter: $filter) {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             title
             date
             content
+            images
             likes {
                 _id
                 user
             }
             comments {
                 _id
-                user
-                name
+                user {
+                    _id
+                    name
+                    image
+                }
                 date
                 comment
             }
@@ -110,19 +132,26 @@ export const GET_USER_COMMUNITIES_POSTS = gql`
   query {
       getUserCommunitiesPosts {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             title
             date
             content
+            images
             likes {
                 _id
                 user
             }
             comments {
                 _id
-                user
-                name
+                user {
+                    _id
+                    name
+                    image
+                }
                 date
                 comment
             }
@@ -144,22 +173,29 @@ export const GET_USER_COMMUNITIES_POSTS = gql`
 `
 
 export const GET_EXPLORE_POSTS = gql`
-  query {
+  query($filter: String!) {
     getExplorePosts(filter: $filter) {
         _id
-        user
-        name
+        user {
+            _id
+            name
+            image
+        }
         title
         date
         content
+        images
         likes {
             _id
             user
         }
         comments {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             date
             comment
         }
@@ -202,6 +238,24 @@ export const GET_COMMUNITIES = gql`
         date
         city
         province
+        image
+        isPrivate
+        isActive
+        memberCount
+      }
+  }
+`
+
+export const GET_FILTER_COMMUNITIES = gql`
+  query($filter: String, $location: String, $sort: String) {
+    getFilterCommunities(filter: $filter, location: $location, sort: $sort) {
+        _id
+        name
+        bio
+        date
+        city
+        province
+        image
         isPrivate
         isActive
         memberCount
@@ -215,6 +269,7 @@ export const GET_USER = gql`
             _id
             name
             bio
+            image
         }
     }
 `
@@ -263,19 +318,26 @@ export const FETCH_QUERY_HOME = gql`
     }
     getUserCommunitiesPosts(filter: $filter) {
         _id
-        user
-        name
+        user {
+            _id
+            name
+            image
+        }
         title
         date
         content
+        images
         likes {
             _id
             user
         }
         comments {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             date
             comment
         }
@@ -295,19 +357,26 @@ export const FETCH_QUERY_HOME = gql`
     }
     getUserCommunityPosts(communityId: $communityId, filter: $filter) {
         _id
-        user
-        name
+        user {
+            _id
+            name
+            image
+        }
         title
         date
         content
+        images
         likes {
             _id
             user
         }
         comments {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             date
             comment
         }
@@ -334,14 +403,19 @@ export const FETCH_QUERY_PROFILE = gql`
         _id
         name
         bio
+        image
       }
       getUserPosts(id: $id) {
         _id
-        user
-        name
+        user {
+            _id
+            name
+            image
+        }
         date
         title
         content
+        images
         likes{
             _id
             user
@@ -357,7 +431,11 @@ export const FETCH_QUERY_PROFILE = gql`
         }
         comments{
             _id
-            user
+            user {
+                _id
+                name
+                image
+            }
             comment
         }
         community {
@@ -385,6 +463,7 @@ export const FETCH_QUERY_HEADER_COMMUNITY = gql`
             date
             city
             province
+            image
             isPrivate
             isActive
             memberCount
@@ -397,19 +476,26 @@ export const FETCH_QUERY_HEADER_COMMUNITY = gql`
         }
         getCommunityPosts(communityId: $communityId) {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             title
             date
             content
+            images
             likes {
                 _id
                 user
             }
             comments {
                 _id
-                user
-                name
+                user {
+                    _id
+                    name
+                    image
+                }
                 date
                 comment
             }
@@ -432,6 +518,7 @@ export const FETCH_QUERY_HEADER_COMMUNITY = gql`
                 _id
                 name
                 bio
+                image
             }
             isJoin
             isAdmin
@@ -441,8 +528,10 @@ export const FETCH_QUERY_HEADER_COMMUNITY = gql`
             user {
                 _id
                 name
-                bio 
+                bio
+                image
             }
+            message
         }
     }
 `
@@ -456,6 +545,7 @@ export const FETCH_QUERY_MENU_COMMUNITY = gql`
         date
         city
         province
+        image
         isPrivate
         isActive
         memberCount
@@ -468,19 +558,26 @@ export const FETCH_QUERY_MENU_COMMUNITY = gql`
     }
     getCommunityPosts(communityId: $communityId) {
         _id
-        user
-        name
+        user {
+            _id
+            name
+            image
+        }
         title
         date
         content
+        images
         likes {
             _id
             user
         }
         comments {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             date
             comment
         }
@@ -503,6 +600,7 @@ export const FETCH_QUERY_MENU_COMMUNITY = gql`
             _id
             name
             bio
+            image
         }
         isJoin
         isAdmin
@@ -512,8 +610,10 @@ export const FETCH_QUERY_MENU_COMMUNITY = gql`
         user {
             _id
             name
-            bio 
+            bio
+            image
         }
+        message
     }
   }
 `
@@ -527,6 +627,7 @@ export const FETCH_QUERY_COMMUNITY = gql`
         date
         city
         province
+        image
         isPrivate
         isActive
         memberCount
@@ -539,19 +640,26 @@ export const FETCH_QUERY_COMMUNITY = gql`
     }
     getCommunityPosts(communityId: $communityId) {
         _id
-        user
-        name
+        user {
+            _id
+            name
+            image
+        }
         title
         date
         content
+        images
         likes {
             _id
             user
         }
         comments {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             date
             comment
         }
@@ -574,6 +682,7 @@ export const FETCH_QUERY_COMMUNITY = gql`
             _id
             name
             bio
+            image
         }
         isJoin
         isAdmin
@@ -583,7 +692,64 @@ export const FETCH_QUERY_COMMUNITY = gql`
         user {
             _id
             name
-            bio 
+            bio
+            image
+        }
+        message
+    }
+  }
+`
+
+export const FETCH_QUERY_COMMUNITY_GUEST = gql`
+  query($communityId: ID!) {
+    getCommunity(communityId: $communityId) {
+        _id
+        name
+        bio
+        date
+        city
+        province
+        image
+        isPrivate
+        isActive
+        memberCount
+    }
+    getCommunityPosts(communityId: $communityId) {
+        _id
+        user {
+            _id
+            name
+            image
+        }
+        title
+        date
+        content
+        images
+        likes {
+            _id
+            user
+        }
+        comments {
+            _id
+            user {
+                _id
+                name
+                image
+            }
+            date
+            comment
+        }
+        dislikes {
+            _id
+            user
+        }
+        bookmarks {
+            _id
+            user
+            date
+        }
+        community {
+            _id
         }
     }
   }
@@ -599,6 +765,10 @@ export const GET_FAQS = gql`
                 question
                 answer
             }
+        }
+        getFaqCategories {
+            _id
+            category
         }
     }
 `
@@ -646,19 +816,26 @@ export const BOOKMARK_POST = gql`
     ) {
         bookmarkPost(postId: $postId) {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             title
             date
             content
+            images
             likes {
                 _id
                 user
             }
             comments {
                 _id
-                user
-                name
+                user {
+                    _id
+                    name
+                    image
+                }
                 date
                 comment
             }
@@ -692,8 +869,11 @@ export const ADD_COMMENT = gql`
             _id
             comments{
                 _id
-                user
-                name
+                user {
+                    _id
+                    name
+                    image
+                }
                 date
                 comment
             }
@@ -710,8 +890,11 @@ export const DELETE_COMMENT = gql`
             _id
             comments {
                 _id
-                user
-                name
+                user {
+                    _id
+                    name
+                    image
+                }
                 date
                 comment
             }
@@ -723,17 +906,20 @@ export const EDIT_PROFILE = gql`
     mutation editProfile(
         $name: String!
         $bio: String!
+        $image: String!
     ) {
         editProfile(
             profileInput:
             {
                 name: $name
-                    bio: $bio
+                bio: $bio
+                image: $image
             }
         ) {
             _id
             name
             bio
+            image
         }
     }
 `
@@ -741,8 +927,9 @@ export const EDIT_PROFILE = gql`
 export const REQUEST_MEMBER = gql`
   mutation requestJoinCommunity(
       $communityId: ID!
+      $message: String
     ) {
-        requestJoinCommunity(communityId: $communityId) {
+        requestJoinCommunity(communityId: $communityId, message: $message) {
             _id
             isAdmin
             isJoin
@@ -824,6 +1011,7 @@ export const CREATE_COMMUNITY = gql`
       $bio: String!
       $city: String!
       $province: String!
+      $image: String!
       $isPrivate: Boolean!
     ) {
         createCommunity(
@@ -832,6 +1020,7 @@ export const CREATE_COMMUNITY = gql`
                 bio: $bio
                 city: $city
                 province: $province
+                image: $image
                 isPrivate: $isPrivate
             }
         ) {
@@ -847,21 +1036,30 @@ export const CREATE_POST = gql`
       $title: String!
       $content: String!
       $communityId: ID!
+      $images: [String]
     ) {
-        createPost(title: $title, content: $content, communityId: $communityId) {
+        createPost(title: $title, content: $content, communityId: $communityId, images: $images) {
             _id
-            user
-            name
+            user {
+                _id
+                name
+                image
+            }
             title
             date
             content
+            images
             likes {
                 _id
                 user
             }
             comments {
                 _id
-                user
+                user {
+                    _id
+                    name
+                    image
+                }
                 date
                 comment
             }

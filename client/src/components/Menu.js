@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
     Tab,
@@ -15,11 +15,15 @@ import {
     Card,
     Ref,
     Image,
-    Dropdown
+    Dropdown,
+    Confirm,
+    Modal,
+    Form,
+    TextArea
 } from 'semantic-ui-react'
 import styled from 'styled-components'
 
-import { Thread } from './Thread'
+import { ThreadCommunity, ThreadGuest } from './Thread'
 import profileImage from '../assets/profile.jpg'
 
 import {
@@ -35,6 +39,9 @@ import { useMutation } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 
 const Styles = styled.div`
+    .paragraph {
+        white-space: pre-line;
+    }
 `
 
 export function MenuCommunity({
@@ -44,14 +51,35 @@ export function MenuCommunity({
     members,
     requests,
     refetch,
-    contextref
+    contextRef
 }) {
     const { auth } = useContext(AuthContext)
     const userId = auth._id
     const communityId = _id
 
+    const [activeTab, setActiveTab] = useState(0)
+    const [activeMenu, setActiveMenu] = useState('thread')
+
+    function onClickThread() {
+        setActiveTab(0)
+        setActiveMenu('thread')
+    }
+    function onClickMember() {
+        setActiveTab(1)
+        setActiveMenu('member')
+    }
+    function onClickRequest() {
+        setActiveTab(2)
+        setActiveMenu('request')
+    }
+
+    const [confirmAdminOpen, setConfirmAdminOpen] = useState(false)
+    const [confirmKickOpen, setConfirmKickOpen] = useState(false)
+    const [requestMessage, setRequestMessage] = useState('')
+    const [modalOpen, setModalOpen] = useState(false)
+
     const [requestJoinCommunity] = useMutation(REQUEST_MEMBER, {
-        variables: { communityId: _id },
+        variables: { communityId: _id, message: requestMessage },
         refetchQueries: [{
             query: FETCH_QUERY_MENU_COMMUNITY,
             variables: { userId: userId, communityId: communityId }
@@ -94,12 +122,49 @@ export function MenuCommunity({
 
     return (
         <div>
-            {/* <Sticky context={contextref}> */}
+            <Sticky context={contextRef} offset={70}>
+                <Segment>
+                    <Menu pointing secondary>
+                        <Menu.Item
+                            name='thread'
+                            active={activeMenu === 'thread'}
+                            onClick={onClickThread}
+                        >
+                            Thread
+                        </Menu.Item>
+                        <Menu.Item></Menu.Item>
+                        <Menu.Item
+                            name='member'
+                            active={activeMenu === 'member'}
+                            onClick={onClickMember}
+                        >
+                            Member
+                        </Menu.Item>
+                        <Menu.Item></Menu.Item>
+                        {isAdmin && isPrivate ?
+                            (
+                                <Menu.Item
+                                    name='request'
+                                    active={activeMenu === 'request'}
+                                    onClick={onClickRequest}
+                                >
+                                    Member Request
+                                    {requests.length > 0 ? (
+                                        <Label color='blue' floating>
+                                            {requests.length}
+                                        </Label>
+                                    ) : []
+                                    }
+                                </Menu.Item>
+                            ) : []
+                        }
+                    </Menu>
+                </Segment>
+            </Sticky>
 
             <Tab
                 panes={[
                     {
-                        menuItem: 'Thread',
                         render: () =>
                             isJoin ?
                                 posts.length > 0 ?
@@ -110,7 +175,7 @@ export function MenuCommunity({
                                                     {
                                                         posts &&
                                                         posts.map(post => (
-                                                            <Thread key={post._id} post={post} />
+                                                            <ThreadCommunity key={post._id} post={post} admin={isAdmin} />
                                                         ))
                                                     }
                                                 </Transition.Group>
@@ -144,9 +209,42 @@ export function MenuCommunity({
                                                             Requested
                                                         </Button>
                                                     ) : (
-                                                        <Button primary onClick={requestJoinCommunity}>
-                                                            Request
-                                                        </Button>
+                                                        <>
+                                                            <Button primary type="button" onClick={() => setModalOpen(true)}>
+                                                                Request
+                                                            </Button>
+                                                            <Modal
+                                                                size='mini'
+                                                                onClose={() => setModalOpen(false)}
+                                                                onOpen={() => setModalOpen(true)}
+                                                                open={modalOpen}
+                                                            >
+                                                                <Modal.Header>Add some message (optional)</Modal.Header>
+                                                                <Modal.Content>
+                                                                    <Modal.Description>
+                                                                        <Form>
+                                                                            <TextArea
+                                                                                fluid
+                                                                                name='message'
+                                                                                value={requestMessage}
+                                                                                placeholder='Write your message'
+                                                                                onChange={e => setRequestMessage(e.target.value)}
+                                                                            />
+                                                                        </Form>
+                                                                    </Modal.Description>
+                                                                </Modal.Content>
+                                                                <Modal.Actions>
+                                                                    <Button onClick={() => setModalOpen(false)}>
+                                                                        Cancel
+                                                                    </Button>
+                                                                    <Button
+                                                                        content="Submit"
+                                                                        onClick={requestJoinCommunity}
+                                                                        positive
+                                                                    />
+                                                                </Modal.Actions>
+                                                            </Modal>
+                                                        </>
                                                     )
                                                 :
                                                 (
@@ -160,7 +258,6 @@ export function MenuCommunity({
                     },
 
                     {
-                        menuItem: 'Member',
                         render: () =>
                             <Segment attached='bottom'>
                                 <Item.Group divided link>
@@ -168,7 +265,8 @@ export function MenuCommunity({
                                         members &&
                                         members.map(member => (
                                             <Item>
-                                                <Item.Image size='tiny' src={profileImage} />
+                                                {console.log(member)}
+                                                <Item.Image size='tiny' src={member.user.image} />
 
                                                 <Item.Content>
                                                     <Link
@@ -198,7 +296,15 @@ export function MenuCommunity({
                                                                                 <Dropdown.Menu>
                                                                                     <Dropdown.Item
                                                                                         text='Kick'
-                                                                                        onClick={() =>
+                                                                                        onClick={() => setConfirmKickOpen(true)}
+                                                                                    />
+                                                                                    <Confirm
+                                                                                        content='Are you sure to kick this member?'
+                                                                                        cancelButton='NO'
+                                                                                        confirmButton="YES"
+                                                                                        open={confirmKickOpen}
+                                                                                        onCancel={() => setConfirmKickOpen(false)}
+                                                                                        onConfirm={() =>
                                                                                             removeMember({
                                                                                                 variables: {
                                                                                                     communityId: communityId,
@@ -219,7 +325,15 @@ export function MenuCommunity({
                                                                                 <Dropdown.Menu>
                                                                                     <Dropdown.Item
                                                                                         text='Appoint admin'
-                                                                                        onClick={() =>
+                                                                                        onClick={() => setConfirmAdminOpen(true)}
+                                                                                    />
+                                                                                    <Confirm
+                                                                                        content='Are you sure to appoint this member as admin?'
+                                                                                        cancelButton='NO'
+                                                                                        confirmButton="YES"
+                                                                                        open={confirmAdminOpen}
+                                                                                        onCancel={() => setConfirmAdminOpen(false)}
+                                                                                        onConfirm={() =>
                                                                                             appointAdmin({
                                                                                                 variables: {
                                                                                                     communityId: communityId,
@@ -230,7 +344,15 @@ export function MenuCommunity({
                                                                                     />
                                                                                     <Dropdown.Item
                                                                                         text='Kick'
-                                                                                        onClick={() =>
+                                                                                        onClick={() => setConfirmKickOpen(true)}
+                                                                                    />
+                                                                                    <Confirm
+                                                                                        content='Are you sure to kick this member?'
+                                                                                        cancelButton='NO'
+                                                                                        confirmButton="YES"
+                                                                                        open={confirmKickOpen}
+                                                                                        onCancel={() => setConfirmKickOpen(false)}
+                                                                                        onConfirm={() =>
                                                                                             removeMember({
                                                                                                 variables: {
                                                                                                     communityId: communityId,
@@ -256,17 +378,6 @@ export function MenuCommunity({
 
                     isAdmin && isPrivate ?
                         {
-                            menuItem: (
-                                <Menu.Item>
-                                    Member Request
-                                    {requests.length > 0 ? (
-                                        <Label color='blue' floating>
-                                            {requests.length}
-                                        </Label>
-                                    ) : []
-                                    }
-                                </Menu.Item>
-                            ),
                             render: () =>
                                 requests &&
                                     requests.length > 0 ?
@@ -280,7 +391,7 @@ export function MenuCommunity({
                                                                 <Image
                                                                     floated='left'
                                                                     size='mini'
-                                                                    src={profileImage}
+                                                                    src={request.user.image}
                                                                 />
                                                                 <Card.Header>
                                                                     <Link
@@ -292,9 +403,7 @@ export function MenuCommunity({
                                                                 </Card.Header>
                                                                 <Card.Meta>{request.user.bio}</Card.Meta>
                                                                 <Card.Description>
-                                                                    <p>
-                                                                        Let me innnn
-                                                                    </p>
+                                                                    <p className="paragraph">{request.message}</p>
                                                                 </Card.Description>
                                                             </Card.Content>
                                                             <Card.Content extra>
@@ -339,8 +448,81 @@ export function MenuCommunity({
                         :
                         {}
                 ]}
+                activeIndex={activeTab}
             />
-            {/* </Sticky> */}
+        </div>
+    )
+}
+
+export function MenuCommunityGuest({
+    details: { isPrivate },
+    posts,
+    contextRef
+}) {
+    const [activeTab, setActiveTab] = useState(0)
+    const [activeMenu, setActiveMenu] = useState('thread')
+
+    function onClickThread() {
+        setActiveTab(0)
+        setActiveMenu('thread')
+    }
+    return (
+        <div>
+            <Sticky context={contextRef} offset={70}>
+                <Segment>
+                    <Menu pointing secondary>
+                        <Menu.Item
+                            name='thread'
+                            active={activeMenu === 'thread'}
+                            onClick={onClickThread}
+                        >
+                            Thread
+                        </Menu.Item>
+                    </Menu>
+                </Segment>
+            </Sticky>
+
+            <Tab
+                panes={[
+                    {
+                        render: () =>
+                            !isPrivate ?
+                                posts.length > 0 ?
+                                    (
+                                        <Segment attached='bottom'>
+                                            <Item.Group divided>
+                                                <Transition.Group>
+                                                    {
+                                                        posts &&
+                                                        posts.map(post => (
+                                                            <ThreadGuest key={post._id} post={post} />
+                                                        ))
+                                                    }
+                                                </Transition.Group>
+                                            </Item.Group>
+                                        </Segment>
+                                    ) : (
+                                        <Segment placeholder>
+                                            <Header icon>
+                                                <Icon name='edit' />
+                                                No threads posted here yet
+                                            </Header>
+                                        </Segment>
+                                    )
+                                : (
+                                    <Segment placeholder>
+                                        <Header icon>
+                                            <Icon name='lock' />
+                                            This is a private community
+                                            <br></br><br></br>
+                                            Login and join the community to see the contents inside
+                                        </Header>
+                                    </Segment>
+                                )
+                    }
+                ]}
+                activeIndex={activeTab}
+            />
         </div>
     )
 }

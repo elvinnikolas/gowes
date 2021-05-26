@@ -22,7 +22,7 @@ module.exports = {
 
         async getUserPosts(_, { id }) {
             try {
-                const posts = await Post.find({ user: id }).populate('community')
+                const posts = await Post.find({ user: id }).sort({ date: -1 }).populate('community user').populate('comments.user')
                 return posts
 
             } catch (error) {
@@ -68,8 +68,7 @@ module.exports = {
 
             const token = jwt.sign(
                 payload,
-                jwtSecret,
-                { expiresIn: 3600 }
+                jwtSecret
             )
 
             //return data
@@ -137,8 +136,7 @@ module.exports = {
 
             const token = jwt.sign(
                 payload,
-                jwtSecret,
-                { expiresIn: 3600 }
+                jwtSecret
             )
 
             //return data

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Container, Header, Icon, Image, Label, Button, Segment, Confirm } from 'semantic-ui-react'
+import { Container, Icon, Image, Label, Button, Confirm, Card, Divider, Modal, Form, TextArea } from 'semantic-ui-react'
 import styled from 'styled-components'
 
 import {
@@ -17,7 +17,7 @@ const Styles = styled.div`
 `
 
 export function HeaderCommunity({
-    details: { _id, name, bio, date, city, province, isPrivate, isActive, memberCount },
+    details: { _id, name, bio, date, city, province, image, isPrivate, isActive, memberCount },
     status: { isAdmin, isJoin, isRequest },
     members,
     posts
@@ -27,10 +27,13 @@ export function HeaderCommunity({
     const userId = auth._id
     const communityId = _id
 
+    const [requestMessage, setRequestMessage] = useState('')
+    const [modalOpen, setModalOpen] = useState(false)
+
     let history = useHistory()
 
     const [requestJoinCommunity] = useMutation(REQUEST_MEMBER, {
-        variables: { communityId: _id },
+        variables: { communityId: _id, message: requestMessage },
         refetchQueries: [{
             query: FETCH_QUERY_HEADER_COMMUNITY,
             variables: { userId: userId, communityId: communityId }
@@ -86,108 +89,190 @@ export function HeaderCommunity({
     }
 
     return (
-        <Segment placeholder>
-            <Header as='h2' icon textAlign='center'>
-                <Icon name='bicycle' circular />
-                <Header.Content>{name}</Header.Content>
-            </Header>
-            <Container textAlign='center'>
-                <Label size='medium'>
-                    <Icon name='lock' /> {isPrivate ? "Private" : "Public"}
-                </Label>
-                <Label size='medium'>
-                    <Icon name='map marker' /> {city}
-                </Label>
-                <Label size='medium'>
-                    <Icon name='map pin' /> {province}
-                </Label>
-                <br></br>
-                <Label basic size='medium'>
-                    <Icon name='user' /> {memberCount} {memberCount <= 1 ? "member" : "members"}
-                </Label>
-                <Label basic size='medium'>
-                    <Icon name='edit' /> {posts.length} {posts.length <= 1 ? "thread" : "threads"}
-                </Label>
-            </Container>
-            <Container>
-                <br></br>
-            </Container>
-            <Container text textAlign='center'>
-                <p>{bio}</p>
+        <Container>
+            <Card.Group>
+                <Card fluid>
+                    <Card.Content centered textAlign='center'>
+                        <Image circular size='small' src={image} />
+                        <br></br><br></br>
+                        <Card.Header>{name}</Card.Header>
+                        <br></br>
+                        <Container textAlign='center'>
+                            <Label size='medium'>
+                                <Icon name='lock' /> {isPrivate ? "Private" : "Public"}
+                            </Label>
+                            <Label size='medium'>
+                                <Icon name='map marker' /> {city}
+                            </Label>
+                            <Label size='medium'>
+                                <Icon name='map pin' /> {province}
+                            </Label>
+                            <br></br>
+                            <Label basic size='medium'>
+                                <Icon name='user' /> {memberCount} {memberCount <= 1 ? "member" : "members"}
+                            </Label>
+                            <Label basic size='medium'>
+                                <Icon name='edit' /> {posts.length} {posts.length <= 1 ? "thread" : "threads"}
+                            </Label>
+                        </Container>
+                        <Divider />
+                        <Card.Description>
+                            {bio}
+                        </Card.Description>
+                        <Divider />
+                        <Card.Description>
+                            {isJoin ?
+                                memberCount > 1 ?
+                                    isAdmin ?
+                                        (
+                                            <>
+                                                <Button negative onClick={onLeaveCommunity}>
+                                                    Leave
+                                                    </Button>
+                                                <Confirm
+                                                    content='You must appoint at least one admin before you leave'
+                                                    confirmButton="OK"
+                                                    open={confirmOpen}
+                                                    onCancel={() => setConfirmOpen(false)}
+                                                    onConfirm={() => setConfirmOpen(false)}
+                                                />
+                                                <Confirm
+                                                    content='Are you sure you want to leave this community?'
+                                                    confirmButton="Leave"
+                                                    open={confirmOpenLeave}
+                                                    onCancel={() => setConfirmOpenLeave(false)}
+                                                    onConfirm={leaveCommunity}
+                                                />
+                                            </>
+                                        )
+                                        :
+                                        (
+                                            <>
+                                                <Button negative onClick={() => setConfirmOpenLeave(true)}>
+                                                    Leave
+                                                    </Button>
+                                                <Confirm
+                                                    content='Are you sure you want to leave this community?'
+                                                    confirmButton="Leave"
+                                                    open={confirmOpenLeave}
+                                                    onCancel={() => setConfirmOpenLeave(false)}
+                                                    onConfirm={leaveCommunity}
+                                                />
+                                            </>
+                                        )
+                                    : (
+                                        <>
+                                            <Button negative onClick={() => setConfirmOpenLeave(true)}>
+                                                Leave
+                                                </Button>
+                                            <Confirm
+                                                content='Are you sure you want to leave this community?'
+                                                confirmButton="Leave"
+                                                open={confirmOpenLeave}
+                                                onCancel={() => setConfirmOpenLeave(false)}
+                                                onConfirm={leaveAndRemoveCommunity}
+                                            />
+                                        </>
+                                    )
+                                :
+                                isPrivate ?
+                                    isRequest ?
+                                        (
+                                            <Button primary disabled>
+                                                Requested
+                                            </Button>
+                                        ) : (
+                                            <>
+                                                <Button primary type="button" onClick={() => setModalOpen(true)}>
+                                                    Request
+                                                </Button>
+                                                <Modal
+                                                    size='mini'
+                                                    onClose={() => setModalOpen(false)}
+                                                    onOpen={() => setModalOpen(true)}
+                                                    open={modalOpen}
+                                                >
+                                                    <Modal.Header>Add some message (optional)</Modal.Header>
+                                                    <Modal.Content>
+                                                        <Modal.Description>
+                                                            <Form>
+                                                                <TextArea
+                                                                    fluid
+                                                                    name='message'
+                                                                    value={requestMessage}
+                                                                    placeholder='Write your message'
+                                                                    onChange={e => setRequestMessage(e.target.value)}
+                                                                />
+                                                            </Form>
+                                                        </Modal.Description>
+                                                    </Modal.Content>
+                                                    <Modal.Actions>
+                                                        <Button onClick={() => setModalOpen(false)}>
+                                                            Cancel
+                                                        </Button>
+                                                        <Button
+                                                            content="Submit"
+                                                            onClick={requestJoinCommunity}
+                                                            positive
+                                                        />
+                                                    </Modal.Actions>
+                                                </Modal>
+                                            </>
+                                        )
+                                    :
+                                    (
+                                        <Button primary onClick={joinCommunity}>
+                                            Join
+                                        </Button>
+                                    )
+                            }
+                        </Card.Description>
+                    </Card.Content>
+                </Card>
+            </Card.Group>
+        </Container>
+    )
+}
 
-                {isJoin ?
-                    memberCount > 1 ?
-                        isAdmin ?
-                            (
-                                <>
-                                    <Button negative onClick={onLeaveCommunity}>
-                                        Leave
-                                    </Button>
-                                    <Confirm
-                                        content='You must appoint at least one admin before you leave'
-                                        confirmButton="OK"
-                                        open={confirmOpen}
-                                        onCancel={() => setConfirmOpen(false)}
-                                        onConfirm={() => setConfirmOpen(false)}
-                                    />
-                                    <Confirm
-                                        content='Are you sure you want to leave this community?'
-                                        confirmButton="Leave"
-                                        open={confirmOpenLeave}
-                                        onCancel={() => setConfirmOpenLeave(false)}
-                                        onConfirm={leaveCommunity}
-                                    />
-                                </>
-                            )
-                            :
-                            (
-                                <>
-                                    <Button negative onClick={() => setConfirmOpenLeave(true)}>
-                                        Leave
-                                    </Button>
-                                    <Confirm
-                                        content='Are you sure you want to leave this community?'
-                                        confirmButton="Leave"
-                                        open={confirmOpenLeave}
-                                        onCancel={() => setConfirmOpenLeave(false)}
-                                        onConfirm={leaveCommunity}
-                                    />
-                                </>
-                            )
-                        : (
-                            <>
-                                <Button negative onClick={() => setConfirmOpenLeave(true)}>
-                                    Leave
-                                </Button>
-                                <Confirm
-                                    content='Are you sure you want to leave this community?'
-                                    confirmButton="Leave"
-                                    open={confirmOpenLeave}
-                                    onCancel={() => setConfirmOpenLeave(false)}
-                                    onConfirm={leaveAndRemoveCommunity}
-                                />
-                            </>
-                        )
-                    :
-                    isPrivate ?
-                        isRequest ?
-                            (
-                                <Button primary disabled>
-                                    Requested
-                                </Button>
-                            ) : (
-                                <Button primary onClick={requestJoinCommunity}>
-                                    Request
-                                </Button>
-                            )
-                        :
-                        (
-                            <Button primary onClick={joinCommunity}>
-                                Join
-                            </Button>
-                        )
-                }
-            </Container>
-        </Segment>
+export function HeaderCommunityGuest({
+    details: { name, bio, city, province, image, isPrivate, memberCount },
+    posts
+}) {
+
+    return (
+        <Container>
+            <Card.Group>
+                <Card fluid>
+                    <Card.Content centered textAlign='center'>
+                        <Image circular size='small' src={image} />
+                        <br></br><br></br>
+                        <Card.Header>{name}</Card.Header>
+                        <br></br>
+                        <Container textAlign='center'>
+                            <Label size='medium'>
+                                <Icon name='lock' /> {isPrivate ? "Private" : "Public"}
+                            </Label>
+                            <Label size='medium'>
+                                <Icon name='map marker' /> {city}
+                            </Label>
+                            <Label size='medium'>
+                                <Icon name='map pin' /> {province}
+                            </Label>
+                            <br></br>
+                            <Label basic size='medium'>
+                                <Icon name='user' /> {memberCount} {memberCount <= 1 ? "member" : "members"}
+                            </Label>
+                            <Label basic size='medium'>
+                                <Icon name='edit' /> {posts.length} {posts.length <= 1 ? "thread" : "threads"}
+                            </Label>
+                        </Container>
+                        <Divider />
+                        <Card.Description>
+                            {bio}
+                        </Card.Description>
+                    </Card.Content>
+                </Card>
+            </Card.Group>
+        </Container>
     )
 }

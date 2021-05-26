@@ -21,10 +21,6 @@ const Styles = styled.div`
         flex-direction: column-reverse;
         background-color: #F5F5F5;
         // scrollbar-width: none;
-        
-        // &::-webkit-scrollbar {
-        //     display:none;
-        // }
     }
     
     .chat-segment {

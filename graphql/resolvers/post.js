@@ -5,7 +5,7 @@ module.exports = {
     Query: {
         async getPosts() {
             try {
-                const posts = await Post.find().sort({ date: -1 }).populate('community')
+                const posts = await Post.find().sort({ date: -1 }).populate('community user').populate('comments.user')
                 return posts
 
             } catch (error) {
@@ -15,7 +15,7 @@ module.exports = {
 
         async getPost(_, { postId }) {
             try {
-                const post = await Post.findById(postId).populate('community')
+                const post = await Post.findById(postId).populate('community user').populate('comments.user')
 
                 if (!post) {
                     throw new Error('Post not found')
@@ -27,11 +27,17 @@ module.exports = {
             }
         },
 
-        async getBookmarkPosts(_, { }, context) {
+        async getBookmarkPosts(_, { filter }, context) {
             const payload = auth(context)
+            let posts
 
             try {
-                const posts = await Post.find({ 'bookmarks.user': payload._id }).sort({ 'bookmarks.date': -1 }).populate('community')
+                if (filter == 'post') {
+                    posts = await Post.find({ 'bookmarks.user': payload._id }).sort({ date: -1 }).populate('community user').populate('comments.user')
+                } else {
+                    posts = await Post.find({ 'bookmarks.user': payload._id }).sort({ 'bookmarks.date': -1 }).populate('community user').populate('comments.user')
+
+                }
                 return posts
 
             } catch (error) {
@@ -55,25 +61,25 @@ module.exports = {
                         community: {
                             $in: communitiesId
                         }
-                    }).sort({ date: -1 }).populate('community')
+                    }).sort({ date: -1 }).populate('community user').populate('comments.user')
                 } else if (filter == 'popular') {
                     posts = await Post.find({
                         community: {
                             $in: communitiesId
                         }
-                    }).sort({ likesCount: -1 }).populate('community')
+                    }).sort({ likesCount: -1 }).populate('community user').populate('comments.user')
                 } else if (filter == 'comment') {
                     posts = await Post.find({
                         community: {
                             $in: communitiesId
                         }
-                    }).sort({ commentsCount: -1 }).populate('community')
+                    }).sort({ commentsCount: -1 }).populate('community user').populate('comments.user')
                 } else {
                     posts = await Post.find({
                         community: {
                             $in: communitiesId
                         }
-                    }).populate('community')
+                    }).populate('community user').populate('comments.user')
                 }
 
                 return posts
@@ -88,11 +94,11 @@ module.exports = {
             try {
                 let posts
                 if (filter == 'recent') {
-                    posts = await Post.find({ community: communityId }).sort({ date: -1 }).populate('community')
+                    posts = await Post.find({ community: communityId }).sort({ date: -1 }).populate('community user').populate('comments.user')
                 } else if (filter == 'popular') {
-                    posts = await Post.find({ community: communityId }).sort({ likesCount: -1 }).populate('community')
+                    posts = await Post.find({ community: communityId }).sort({ likesCount: -1 }).populate('community user').populate('comments.user')
                 } else if (filter == 'comment') {
-                    posts = await Post.find({ community: communityId }).sort({ commentsCount: -1 }).populate('community')
+                    posts = await Post.find({ community: communityId }).sort({ commentsCount: -1 }).populate('community user').populate('comments.user')
                 }
 
                 return posts
@@ -103,9 +109,9 @@ module.exports = {
         },
 
         async getExplorePosts(_, { filter }) {
-            let newDate = new Date()
-            let month = 6
-            let year = 2020
+            let today = new Date()
+            let month = today.getMonth() + 1
+            let year = today.getFullYear()
             month = month.toString()
             year = year.toString()
 
@@ -144,25 +150,36 @@ module.exports = {
                                     'as': 'community_docs'
                                 }
                             }, {
+                                '$unwind': {
+                                    'path': '$community_docs'
+                                }
+                            }, {
+                                '$lookup': {
+                                    'from': 'users',
+                                    'localField': 'user',
+                                    'foreignField': '_id',
+                                    'as': 'user_docs'
+                                }
+                            }, {
+                                '$unwind': {
+                                    'path': '$user_docs'
+                                }
+                            }, {
                                 '$project': {
                                     '_id': 1,
-                                    'user': 1,
-                                    'name': 1,
+                                    'user': {
+                                        '$mergeObjects': '$user_docs'
+                                    },
                                     'title': 1,
                                     'date': 1,
                                     'content': 1,
+                                    'images': 1,
                                     'likes': 1,
                                     'dislikes': 1,
                                     'comments': 1,
                                     'bookmarks': 1,
                                     'community': {
-                                        '$mergeObjects': [
-                                            {
-                                                '$arrayElemAt': [
-                                                    '$community_docs', 0
-                                                ]
-                                            }
-                                        ]
+                                        '$mergeObjects': '$community_docs'
                                     }
                                 }
                             }, {
@@ -203,25 +220,36 @@ module.exports = {
                                     'as': 'community_docs'
                                 }
                             }, {
+                                '$unwind': {
+                                    'path': '$community_docs'
+                                }
+                            }, {
+                                '$lookup': {
+                                    'from': 'users',
+                                    'localField': 'user',
+                                    'foreignField': '_id',
+                                    'as': 'user_docs'
+                                }
+                            }, {
+                                '$unwind': {
+                                    'path': '$user_docs'
+                                }
+                            }, {
                                 '$project': {
                                     '_id': 1,
-                                    'user': 1,
-                                    'name': 1,
+                                    'user': {
+                                        '$mergeObjects': '$user_docs'
+                                    },
                                     'title': 1,
                                     'date': 1,
                                     'content': 1,
+                                    'images': 1,
                                     'likes': 1,
                                     'dislikes': 1,
                                     'comments': 1,
                                     'bookmarks': 1,
                                     'community': {
-                                        '$mergeObjects': [
-                                            {
-                                                '$arrayElemAt': [
-                                                    '$community_docs', 0
-                                                ]
-                                            }
-                                        ]
+                                        '$mergeObjects': '$community_docs'
                                     }
                                 }
                             }, {
@@ -244,7 +272,7 @@ module.exports = {
     },
 
     Mutation: {
-        async createPost(_, { title, content, communityId }, context) {
+        async createPost(_, { title, content, communityId, images }, context) {
             const payload = auth(context)
 
             if ((title.trim() == '') || (content.trim() == '')) {
@@ -256,8 +284,8 @@ module.exports = {
                     title,
                     content,
                     user: payload._id,
-                    name: payload.name,
                     community: communityId,
+                    images: images,
                     likesCount: 0,
                     commentsCount: 0,
                     date: new Date().toISOString()
@@ -279,13 +307,8 @@ module.exports = {
                 const post = await Post.findById(postId)
 
                 if (post) {
-                    if (post.user.toString() === payload._id) {
-                        await post.remove()
-                        return 'Post deleted successfully'
-                    }
-                    else {
-                        throw new Error('Invalid user')
-                    }
+                    await post.remove()
+                    return 'Post deleted successfully'
 
                 } else {
                     throw new Error('Invalid post')
@@ -310,7 +333,6 @@ module.exports = {
                     const newComment = {
                         comment,
                         user: payload._id,
-                        name: payload.name,
                         date: new Date().toISOString()
                     }
 
@@ -345,9 +367,9 @@ module.exports = {
                     throw new Error('Comment not found')
                 }
 
-                else if (comment.user.toString() !== userId) {
-                    throw new Error('User not authorized')
-                }
+                // else if (comment.user.toString() !== userId) {
+                //     throw new Error('User not authorized')
+                // }
 
                 else {
                     const removeIndex = post.comments.findIndex(comment => comment.id === commentId)

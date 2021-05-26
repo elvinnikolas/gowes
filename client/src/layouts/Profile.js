@@ -1,13 +1,12 @@
 import React, { useContext } from 'react'
 import { Link, useHistory } from 'react-router-dom'
-import { Grid, Segment, Label, Image, Item, Divider, Card, Icon, Header, Transition, Button, Container } from 'semantic-ui-react'
+import { Grid, Segment, Image, Item, Divider, Card, Icon, Header, Transition, Button, Container } from 'semantic-ui-react'
 
 import styled from 'styled-components'
 import { ThreadExplore } from '../components/Thread'
 import Spinner from '../components/Spinner'
 
-import profileImage from '../assets/profile.jpg'
-import bike from '../assets/bike.jpg'
+import gowes from '../assets/gowes.jpg'
 
 import { AuthContext } from '../context/auth'
 import { useQuery, useMutation } from '@apollo/client'
@@ -32,7 +31,7 @@ export function UserProfile() {
             <Spinner />
         )
     } else {
-        const { name, bio } = user
+        const { name, bio, image } = user
 
         return (
             <Styles>
@@ -50,7 +49,7 @@ export function UserProfile() {
                         <br></br>
 
                         <Card.Group>
-                            <Image circular size='small' src='https://react.semantic-ui.com/images/wireframe/square-image.png' wrapped />
+                            <Image circular size='small' src={image} />
                             <Card>
                                 <Card.Content>
                                     <Card.Header>
@@ -77,12 +76,12 @@ export function UserProfile() {
                         </Divider>
                         <br></br>
 
-                        <Card.Group itemsPerRow={6}>
+                        <Card.Group itemsPerRow={6} centered textAlign='center'>
                             {
                                 communities &&
                                 communities.map(community => (
                                     <Card raised>
-                                        <Image src={bike}></Image>
+                                        <Image src={gowes}></Image>
                                         <Card.Content textAlign='center'>
                                             <Link
                                                 to={`/community/${community.community._id}`}
@@ -101,8 +100,8 @@ export function UserProfile() {
                         <br></br><br></br><br></br>
                         <Divider horizontal>
                             <Header as='h3'>
-                                <Icon name='pencil' />
-                                Posts
+                                <Icon name='edit' />
+                                Threads
                             </Header>
                         </Divider>
                         <br></br>
@@ -164,7 +163,7 @@ export function Profile(props) {
             <Spinner />
         )
     } else {
-        const { name, bio } = user
+        const { name, bio, image } = user
 
         return (
             <Styles>
@@ -190,12 +189,7 @@ export function Profile(props) {
                                 <Card.Group>
                                     <Card fluid>
                                         <Card.Content centered textAlign='center'>
-                                            <Image
-                                                circular
-                                                size='small'
-                                                src={profileImage}
-                                                wrapped
-                                            />
+                                            <Image circular size='small' src={image} />
                                             <br></br><br></br>
                                             <Card.Header>{name}</Card.Header>
                                             <Divider />
@@ -229,12 +223,12 @@ export function Profile(props) {
                         </Divider>
                         <br></br>
 
-                        <Card.Group itemsPerRow={6}>
+                        <Card.Group itemsPerRow={6} centered textAlign='center'>
                             {
                                 communities &&
                                 communities.map(community => (
                                     <Card raised>
-                                        <Image src={bike}></Image>
+                                        <Image src={gowes}></Image>
                                         <Card.Content textAlign='center'>
                                             <Link
                                                 to={`/community/${community.community._id}`}
@@ -253,8 +247,8 @@ export function Profile(props) {
                         <br></br><br></br><br></br>
                         <Divider horizontal>
                             <Header as='h3'>
-                                <Icon name='pencil' />
-                                Posts
+                                <Icon name='edit' />
+                                Threads
                             </Header>
                         </Divider>
                         <br></br>

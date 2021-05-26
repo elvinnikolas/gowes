@@ -4,19 +4,16 @@ module.exports = gql`
     # TYPE
     type Post {
         _id: ID!
-        user: ID!
+        user: User!
         community: Community!
-        name: String!
         title: String!
         date: String!
         content: String!
+        images: [String]
         likes: [Like]!
         dislikes: [Dislike]!
         comments: [Comment]!
         bookmarks: [Bookmark]!
-        # likesCount: Int!
-        # dislikesCount: Int!
-        # commentsCount: Int!
     }
 
     type Like {
@@ -37,19 +34,19 @@ module.exports = gql`
 
     type Comment {
         _id: ID!
-        user: ID!
-        name: String!
+        user: User!
         date: String!
         comment: String!
     }
 
     type User {
         _id: ID!
-        name: String!
-        username: String!
+        name: String
+        username: String
         bio: String
         email: String!
         password: String!
+        image: String
         date: String!
         token: String!
     }
@@ -61,6 +58,7 @@ module.exports = gql`
         date: String!
         city: String!
         province: String!
+        image: String!
         isPrivate: Boolean!
         isActive: Boolean!
         memberCount: Int!
@@ -71,6 +69,7 @@ module.exports = gql`
         community: Community!
         user: User!
         date: String!
+        message: String!
         isAdmin: Boolean!
         isJoin: Boolean!
         isRequest: Boolean!
@@ -83,6 +82,7 @@ module.exports = gql`
         date: String!
         city: String!
         province: String!
+        image: String!
         isPrivate: Boolean!
         isActive: Boolean!
         memberCount: Int!
@@ -94,7 +94,7 @@ module.exports = gql`
     type Faq {
         _id: ID!
         category: String!
-        contents: [Content]!
+        contents: [Content]
     }
 
     type Content {
@@ -123,7 +123,6 @@ module.exports = gql`
         from: ID!
         to: ID!
         content: String!
-        # image: String!
         sent: String!
     }
 
@@ -137,6 +136,7 @@ module.exports = gql`
     input ProfileInput {
         name: String!
         bio: String!
+        image: String!
     }
 
     input CommunityInput {
@@ -144,7 +144,12 @@ module.exports = gql`
         bio: String!
         city: String!
         province: String!
+        image: String!
         isPrivate: Boolean!
+    }
+
+    input ImageInput {
+        url: String!
     }
 
     # QUERY
@@ -152,7 +157,7 @@ module.exports = gql`
         # post
         getPosts: [Post]
         getPost(postId: ID!): Post
-        getBookmarkPosts: [Post]
+        getBookmarkPosts(filter: String!): [Post]
         getUserCommunityPosts(communityId: ID!, filter: String!): [Post]
         getUserCommunitiesPosts(filter: String): [Post]
         getExplorePosts(filter: String): [Post]
@@ -163,6 +168,7 @@ module.exports = gql`
 
         # community
         getCommunities: [Community]
+        getFilterCommunities(filter: String, location: String, sort: String): [Community]
         getCommunity(communityId: ID!): Community
         getCommunityPosts(communityId: ID!): [Post]
         getCommunityMembers(communityId: ID!): [Member]
@@ -173,6 +179,7 @@ module.exports = gql`
 
         # faq
         getFaqs: [Faq]
+        getFaqCategories: [Faq]
 
         #chat
         getChats: [Chat]
@@ -201,7 +208,8 @@ module.exports = gql`
         createPost(
             title: String!,
             content: String!,
-            communityId: ID!
+            communityId: ID!,
+            images: [String]
         ) : Post!
 
         deletePost(
@@ -237,6 +245,7 @@ module.exports = gql`
 
         requestJoinCommunity(
             communityId: ID!
+            message: String
         ) : Member!
 
         joinCommunity(
@@ -269,6 +278,21 @@ module.exports = gql`
 
         deleteCommunityPost(
             postId: ID!
+        ) : String!
+
+        #faq
+        addFaq(
+            category: String!
+            question: String!
+            answer: String!
+        ) : Faq
+
+        addFaqCategory(
+            category: String!
+        ) : Faq
+
+        removeFaq(
+            faqId: ID!
         ) : String!
 
         #message

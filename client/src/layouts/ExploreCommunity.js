@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Grid, Segment, Card, Ref, Sticky } from 'semantic-ui-react'
+import { Grid, Card, Ref, Sticky } from 'semantic-ui-react'
 import Spinner from '../components/Spinner'
 import { Fab, Action } from 'react-tiny-fab';
 import styled from 'styled-components'
@@ -12,22 +12,30 @@ import { CommunityCard } from '../components/CardList'
 import { SidebarExplore } from '../components/Sidebar'
 
 import { useQuery } from '@apollo/client'
-import { GET_COMMUNITIES } from '../util/graphql'
+import { GET_FILTER_COMMUNITIES } from '../util/graphql'
 
 const Styles = styled.div`
 `
 
-function ExploreCommunity() {
+export function ExploreCommunity() {
 
-    const contextRef = React.createRef();
+    const contextRef = React.createRef()
 
     const fab_styles = {
         background: "#007bff"
     }
 
-    const { loading, error, data } = useQuery(GET_COMMUNITIES)
+    const [values, setValues] = useState({
+        filterField: '',
+        locationField: '',
+        sortField: ''
+    })
 
-    const { getCommunities: communities } = data ? data : []
+    const { loading, data, refetch } = useQuery(GET_FILTER_COMMUNITIES, {
+        variables: { filter: values.filterField, location: values.locationField, sort: values.sortField }
+    })
+
+    const { getFilterCommunities: communities } = data ? data : []
 
     return (
         <Ref innerRef={contextRef}>
@@ -35,7 +43,7 @@ function ExploreCommunity() {
                 <Grid columns='equal'>
                     <Grid.Column width={4}>
                         <Sticky context={contextRef} offset={100}>
-                            <SidebarExplore />
+                            <SidebarExplore values={values} setValues={setValues} refetch={refetch} />
                         </Sticky>
                     </Grid.Column>
 
@@ -76,4 +84,69 @@ function ExploreCommunity() {
     )
 }
 
-export default ExploreCommunity
+export function ExploreCommunityGuest() {
+
+    const contextRef = React.createRef()
+
+    const fab_styles = {
+        background: "#007bff"
+    }
+
+    const [values, setValues] = useState({
+        filterField: '',
+        locationField: '',
+        sortField: ''
+    })
+
+    const { loading, data, refetch } = useQuery(GET_FILTER_COMMUNITIES, {
+        variables: { filter: values.filterField, location: values.locationField, sort: values.sortField }
+    })
+
+    const { getFilterCommunities: communities } = data ? data : []
+
+    return (
+        <Ref innerRef={contextRef}>
+            <Styles>
+                <Grid columns='equal'>
+                    <Grid.Column width={4}>
+                        <Sticky context={contextRef} offset={100}>
+                            <SidebarExplore values={values} setValues={setValues} refetch={refetch} />
+                        </Sticky>
+                    </Grid.Column>
+
+                    <Grid.Column width={12}>
+                        {loading ? (
+                            <Spinner />
+                        ) : (
+                            <Card.Group itemsPerRow={4}>
+                                {
+                                    communities &&
+                                    communities.map(community => (
+                                        <CommunityCard key={community._id} community={community} guest='true' />
+                                    ))
+                                }
+                            </Card.Group>
+                        )}
+                    </Grid.Column>
+
+                    <Grid.Column>
+                    </Grid.Column>
+                </Grid>
+
+                <Fab
+                    icon={<FontAwesomeIcon icon={faPlus} />}
+                    mainButtonStyles={fab_styles}
+                >
+                    <Link to={`/create-community`}>
+                        <Action
+                            text="Create Community"
+                            style={fab_styles}
+                        >
+                            <FontAwesomeIcon icon={faUsers} />
+                        </Action>
+                    </Link>
+                </Fab>
+            </Styles>
+        </Ref>
+    )
+}
