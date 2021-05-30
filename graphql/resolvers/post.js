@@ -1,4 +1,5 @@
 const Post = require('../../models/Post')
+const Member = require('../../models/Member')
 const auth = require('../../utils/auth')
 
 module.exports = {

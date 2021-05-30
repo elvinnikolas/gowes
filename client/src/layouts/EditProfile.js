@@ -1,10 +1,9 @@
 import React, { useContext, useState } from 'react'
 import { storage } from '../firebase'
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { Grid, Segment, Button, Form, Header, Divider, Icon, Progress, Container } from 'semantic-ui-react'
 import styled from 'styled-components'
 import Spinner from '../components/Spinner'
-import profileImage from '../assets/profile.jpg'
 
 import { AuthContext } from '../context/auth'
 import { useMutation, useQuery } from '@apollo/client'

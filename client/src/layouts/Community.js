@@ -1,14 +1,14 @@
-import React, { createRef, useContext, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Container, Ref, Grid, Sticky, Divider } from 'semantic-ui-react'
+import React, { useContext } from 'react'
+import { useHistory } from 'react-router-dom'
+import { Container, Ref, Grid, Divider } from 'semantic-ui-react'
 
 import { HeaderCommunity, HeaderCommunityGuest } from '../components/Header'
 import { MenuCommunity, MenuCommunityGuest } from '../components/Menu'
 import Spinner from '../components/Spinner'
-import { Fab, Action } from 'react-tiny-fab';
+import { Fab, Action } from 'react-tiny-fab'
 
-import { faPlus, faStream } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faStream } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { FETCH_QUERY_COMMUNITY, FETCH_QUERY_COMMUNITY_GUEST } from '../util/graphql'
 import { useQuery } from '@apollo/client'
@@ -16,6 +16,8 @@ import { AuthContext } from '../context/auth'
 
 export function Community(props) {
     const contextRef = React.createRef()
+
+    let history = useHistory()
 
     const { auth } = useContext(AuthContext)
     const userId = auth._id
@@ -31,6 +33,10 @@ export function Community(props) {
         getCommunityMembers: members,
         getCommunityMemberRequests: requests
     } = data ? data : []
+
+    function onClickFab() {
+        history.push(`/create-thread/${communityId}`)
+    }
 
     if (loading) {
         return (
@@ -83,19 +89,20 @@ export function Community(props) {
 
                     </Grid>
 
-                    <Fab
-                        icon={<FontAwesomeIcon icon={faPlus} />}
-                        mainButtonStyles={fab_styles}
-                    >
-                        <Link to={`/create-thread/${communityId}`}>
+                    {status.isJoin &&
+                        (<Fab
+                            icon={<FontAwesomeIcon icon={faPlus} />}
+                            mainButtonStyles={fab_styles}
+                        >
                             <Action
+                                onClick={onClickFab}
                                 text="Create Thread"
                                 style={fab_styles}
                             >
                                 <FontAwesomeIcon icon={faStream} />
                             </Action>
-                        </Link>
-                    </Fab>
+                        </Fab>)
+                    }
                 </Container>
             </Ref>
         )

@@ -4,6 +4,7 @@ const communityResolvers = require('./community')
 const faqResolvers = require('./faq')
 const chatResolvers = require('./chat')
 const messageResolvers = require('./message')
+const notificationResolvers = require('./notification')
 
 module.exports = {
     // Post: {
@@ -18,7 +19,8 @@ module.exports = {
         ...communityResolvers.Query,
         ...faqResolvers.Query,
         ...chatResolvers.Query,
-        ...messageResolvers.Query
+        ...messageResolvers.Query,
+        ...notificationResolvers.Query
     },
 
     Mutation: {

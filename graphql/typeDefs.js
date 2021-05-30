@@ -48,6 +48,7 @@ module.exports = gql`
         password: String!
         image: String
         date: String!
+        isAdmin: Boolean
         token: String!
     }
 
@@ -69,7 +70,7 @@ module.exports = gql`
         community: Community!
         user: User!
         date: String!
-        message: String!
+        message: String
         isAdmin: Boolean!
         isJoin: Boolean!
         isRequest: Boolean!
@@ -126,6 +127,14 @@ module.exports = gql`
         sent: String!
     }
 
+    type Notification {
+        _id: ID!
+        community: Community
+        user: User!
+        content: String!
+        date: String!
+    }
+
     # INPUT
     input RegisterInput {
         name: String!
@@ -157,7 +166,7 @@ module.exports = gql`
         # post
         getPosts: [Post]
         getPost(postId: ID!): Post
-        getBookmarkPosts(filter: String!): [Post]
+        getBookmarkPosts(filter: String): [Post]
         getUserCommunityPosts(communityId: ID!, filter: String!): [Post]
         getUserCommunitiesPosts(filter: String): [Post]
         getExplorePosts(filter: String): [Post]
@@ -168,6 +177,7 @@ module.exports = gql`
 
         # community
         getCommunities: [Community]
+        getApproveCommunities: [Community]
         getFilterCommunities(filter: String, location: String, sort: String): [Community]
         getCommunity(communityId: ID!): Community
         getCommunityPosts(communityId: ID!): [Post]
@@ -179,13 +189,15 @@ module.exports = gql`
 
         # faq
         getFaqs: [Faq]
-        getFaqCategories: [Faq]
 
         #chat
         getChats: [Chat]
 
         #message
         getMessages(chatId: ID!): [Message]
+
+        #notification
+        getNotifications(id: ID!): [Notification]
     }
 
     # MUTATION
@@ -243,6 +255,14 @@ module.exports = gql`
             communityInput: CommunityInput
         ) : Community
 
+        approveCommunity(
+            communityId: ID!
+        ) : String
+
+        disapproveCommunity(
+            communityId: ID!
+        ) : String
+
         requestJoinCommunity(
             communityId: ID!
             message: String
@@ -292,7 +312,7 @@ module.exports = gql`
         ) : Faq
 
         removeFaq(
-            faqId: ID!
+            category: String!
         ) : String!
 
         #message

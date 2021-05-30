@@ -2,12 +2,12 @@
 import React, { useState } from 'react'
 import { storage } from '../firebase'
 import { useHistory } from 'react-router-dom'
-import { Button, Form, Dropdown, Header, Icon, Grid, Segment, Progress, Container } from 'semantic-ui-react'
+import { Button, Form, Dropdown, Header, Icon, Grid, Segment, Modal, Progress, Container } from 'semantic-ui-react'
 import styled from 'styled-components'
 
 import { CREATE_COMMUNITY } from '../util/graphql'
 import { useMutation } from '@apollo/client'
-import { GET_COMMUNITIES } from '../util/graphql'
+import { GET_FILTER_COMMUNITIES } from '../util/graphql'
 
 import _ from 'lodash'
 
@@ -42,6 +42,7 @@ export function CreateCommunity() {
     const fileInputRef = React.createRef()
     const [progress, setProgress] = useState(0)
     const [url, setUrl] = useState('https://firebasestorage.googleapis.com/v0/b/gowes-community.appspot.com/o/community%2Fgowes.jpg?alt=media&token=2cb149c2-3eae-4a19-a147-dde7cf0978d3')
+    const [modalOpen, setModalOpen] = useState(false)
 
     const handleUpload = (e) => {
         const image = e.target.files[0]
@@ -79,7 +80,8 @@ export function CreateCommunity() {
     const [createCommunity, { error }] = useMutation(CREATE_COMMUNITY, {
         variables: { ...values, image: url },
         refetchQueries: [{
-            query: GET_COMMUNITIES
+            query: GET_FILTER_COMMUNITIES,
+            variables: { filter: '', location: '', sort: '' }
         }],
         awaitRefetchQueries: true
     })
@@ -205,7 +207,33 @@ export function CreateCommunity() {
                                 />
                             </Form.Field>
                             <br></br>
-                            <Button positive type='submit'>Submit</Button>
+                            <Button positive type='button' onClick={() => setModalOpen(true)}>Submit</Button>
+
+                            <Modal
+                                size='mini'
+                                onClose={() => setModalOpen(false)}
+                                onOpen={() => setModalOpen(true)}
+                                open={modalOpen}
+                            >
+                                <Modal.Header>Community Created Successfully</Modal.Header>
+                                <Modal.Content>
+                                    <Modal.Description>
+                                        <Form>
+                                            <p>Please wait for the admin to review it first
+                                            <br></br>
+                                            You will get notified after being approved</p>
+                                        </Form>
+                                    </Modal.Description>
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    <Button
+                                        type="submit"
+                                        content="Understood"
+                                        primary
+                                        onClick={e => onSubmit(e)}
+                                    />
+                                </Modal.Actions>
+                            </Modal>
                         </Form>
 
                         {error && (

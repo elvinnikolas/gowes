@@ -1,6 +1,46 @@
 import gql from 'graphql-tag'
 
 //QUERY
+export const LOGIN_USER = gql`
+    mutation login(
+        $email: String!
+        $password: String!
+    ) {
+        login(email: $email, password: $password) 
+        {
+            _id
+            name
+            email
+            image
+            date
+            isAdmin
+            token
+        }
+    }
+`
+
+export const REGISTER_USER = gql`
+    mutation register(
+        $name: String!
+        $email: String!
+        $password: String!
+    ) {
+        register(
+            registerInput: {
+                name: $name,
+                email: $email,
+                password: $password
+            }
+        ) {
+            _id
+            name
+            email
+            date
+            token
+        }
+    }
+`
+
 export const GET_POSTS = gql`
     query {
         getPosts {
@@ -246,6 +286,23 @@ export const GET_COMMUNITIES = gql`
   }
 `
 
+export const GET_APPROVE_COMMUNITIES = gql`
+  query {
+    getApproveCommunities {
+        _id
+        name
+        bio
+        date
+        city
+        province
+        image
+        isPrivate
+        isActive
+        memberCount
+      }
+  }
+`
+
 export const GET_FILTER_COMMUNITIES = gql`
   query($filter: String, $location: String, $sort: String) {
     getFilterCommunities(filter: $filter, location: $location, sort: $sort) {
@@ -281,6 +338,7 @@ export const GET_CHATS = gql`
             users {
                 _id
                 name
+                image
             }
             status {
                 user
@@ -766,9 +824,20 @@ export const GET_FAQS = gql`
                 answer
             }
         }
-        getFaqCategories {
+    }
+`
+
+export const GET_NOTIFICATIONS = gql`
+    query($id: ID!) {
+        getNotifications(id: $id) {
             _id
-            category
+            community {
+                _id
+                name
+                image
+            }
+            content
+            date
         }
     }
 `
@@ -1005,6 +1074,22 @@ export const REMOVE_MEMBER = gql`
     }
 `
 
+export const APPROVE_COMMUNITY = gql`
+  mutation approveCommunity(
+      $communityId: ID!
+    ) {
+        approveCommunity(communityId: $communityId)
+    }
+`
+
+export const DISAPPROVE_COMMUNITY = gql`
+  mutation disapproveCommunity(
+      $communityId: ID!
+    ) {
+        disapproveCommunity(communityId: $communityId)
+    }
+`
+
 export const CREATE_COMMUNITY = gql`
   mutation createCommunity(
       $name: String!
@@ -1102,6 +1187,49 @@ export const NEW_CHAT = gql`
         }
     }
 `
+
+export const ADD_FAQ_CATEGORY = gql`
+  mutation addFaqCategory(
+      $category: String!
+    ) {
+        addFaqCategory(category: $category) {
+            _id
+            category
+            contents{
+                _id
+                question
+                answer
+            }
+        }
+    }
+`
+
+export const REMOVE_FAQ = gql`
+  mutation removeFaq(
+      $category: String!
+    ) {
+        removeFaq(category: $category)
+    }
+`
+
+export const ADD_FAQ = gql`
+  mutation addFaqCategory(
+      $category: String!
+      $question: String!
+      $answer: String!
+    ) {
+        addFaq(category: $category, question: $question, answer: $answer) {
+            _id
+            category
+            contents{
+                _id
+                question
+                answer
+            }
+        }
+    }
+`
+
 
 //SUBSCRIPTION
 export const NEW_MESSAGE = gql`

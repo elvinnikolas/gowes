@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dropdown, Divider, Input, Menu, Button, Form, Header, DropdownDivider } from 'semantic-ui-react'
+import { Dropdown, Divider, Input, Menu, Button, Header } from 'semantic-ui-react'
 import styled from 'styled-components'
 
 import _ from 'lodash'
@@ -8,7 +8,7 @@ const Styles = styled.div`
   
 `
 
-export function SidebarExplore({ values, setValues, refetch }) {
+export function SidebarExplore({ values, setValues }) {
     const addressDefinitions =
     {
         state: [
@@ -66,7 +66,7 @@ export function SidebarExplore({ values, setValues, refetch }) {
                     />
                 </Menu.Item>
 
-                <Divider hidden />
+                <Divider />
 
                 <Menu.Item>
                     <Header>Location</Header>

@@ -10,16 +10,6 @@ module.exports = {
             } catch (error) {
                 throw new Error(error)
             }
-        },
-
-        async getFaqCategories() {
-            try {
-                const faqs = await Faq.find()
-                return faqs
-
-            } catch (error) {
-                throw new Error(error)
-            }
         }
     },
     Mutation: {
@@ -29,20 +19,27 @@ module.exports = {
                 throw new Error('Category cannot be empty')
             }
 
-            try {
-                const newFaq = {
-                    category: category,
-                    contents: []
+            let faq = await Faq.findOne({ category: category })
+
+            if (faq) {
+                throw new Error('Category already exists')
+            } else {
+                try {
+                    const newFaq = {
+                        category: category,
+                        contents: []
+                    }
+
+                    faq = new Faq(newFaq)
+                    await faq.save()
+
+                    return faq
+
+                } catch (error) {
+                    throw new Error(error)
                 }
-
-                const faq = new Faq(newFaq)
-                await faq.save()
-
-                return faq
-
-            } catch (error) {
-                throw new Error(error)
             }
+
         },
 
         async addFaq(_, { category, question, answer }) {
@@ -69,10 +66,10 @@ module.exports = {
             }
         },
 
-        async removeFaq(_, { faqId }) {
+        async removeFaq(_, { category }) {
 
             try {
-                const faq = await Faq.findById(faqId)
+                const faq = await Faq.findOne({ category: category })
 
                 if (faq) {
                     await faq.remove()

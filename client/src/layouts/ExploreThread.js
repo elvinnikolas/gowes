@@ -54,13 +54,14 @@ export function ExploreThread() {
                                 <Grid relaxed='very' stackable>
                                     <Grid.Column>
                                         <Icon name="filter" />
-                                        <b>&nbsp;Sort by&nbsp;&nbsp;</b>
+                                        <b>&nbsp;Sort by:&nbsp;&nbsp;</b>
                                         <Dropdown
                                             selection
                                             options={filterOptions}
                                             defaultValue={filterOptions[0].value}
                                             onChange={onClickFilter}
                                         />
+                                        <b>&nbsp;&nbsp;&nbsp;posts this month</b>
                                     </Grid.Column>
                                 </Grid>
                             </Segment>
@@ -77,7 +78,7 @@ export function ExploreThread() {
                                                 {
                                                     explorePosts &&
                                                     explorePosts.map(post => (
-                                                        <ThreadExplore key={post._id} post={post} />
+                                                        <ThreadExplore key={post._id} post={post} refetch={refetch} />
                                                     ))
                                                 }
                                             </Transition.Group>

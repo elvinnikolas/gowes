@@ -4,14 +4,11 @@ import { Grid, Segment, Menu, Feed, Icon, Label, Header, Input, Form, Button, Po
 import Spinner from '../components/Spinner'
 import Moment from 'react-moment'
 import styled from 'styled-components'
-import classNames from 'classnames'
 
 import { useMutation, useQuery, useLazyQuery } from '@apollo/client'
 import { useSubscription } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 import { GET_CHATS, GET_MESSAGES, SEND_MESSAGE, NEW_MESSAGE } from '../util/graphql'
-
-import profileImage from '../assets/profile.jpg'
 
 const Styles = styled.div`
     .message-segment {
@@ -128,7 +125,7 @@ function Chat() {
         chatsContent =
             <Segment placeholder>
                 <Header icon>
-                    <Icon name='edit' />
+                    <Icon name='chat' />
                     No messages yet
                 </Header>
             </Segment>
@@ -170,7 +167,13 @@ function Chat() {
                             }
                             <Feed size='medium'>
                                 <Feed.Event>
-                                    <Feed.Label image={profileImage} />
+                                    {
+                                        chat.users.map(user =>
+                                            user._id !== id ? (
+                                                <Feed.Label image={user.image} />
+                                            ) : []
+                                        )
+                                    }
                                     <Feed.Content>
                                         {
                                             chat.users.map(user =>

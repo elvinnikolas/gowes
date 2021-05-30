@@ -3,7 +3,6 @@ import { Comment, Button, Form, Confirm, TextArea } from 'semantic-ui-react'
 import moment from 'moment'
 import styled from 'styled-components'
 import Spinner from '../components/Spinner'
-import profile from '../assets/profile.jpg'
 
 import { DELETE_COMMENT, ADD_COMMENT } from '../util/graphql'
 import { useMutation } from '@apollo/client'

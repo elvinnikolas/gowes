@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { Grid, Card, Ref, Sticky } from 'semantic-ui-react'
 import Spinner from '../components/Spinner'
 import { Fab, Action } from 'react-tiny-fab';
@@ -21,6 +21,8 @@ export function ExploreCommunity() {
 
     const contextRef = React.createRef()
 
+    let history = useHistory()
+
     const fab_styles = {
         background: "#007bff"
     }
@@ -36,6 +38,10 @@ export function ExploreCommunity() {
     })
 
     const { getFilterCommunities: communities } = data ? data : []
+
+    function onClickFab() {
+        history.push(`/create-community`)
+    }
 
     return (
         <Ref innerRef={contextRef}>
@@ -70,14 +76,13 @@ export function ExploreCommunity() {
                     icon={<FontAwesomeIcon icon={faPlus} />}
                     mainButtonStyles={fab_styles}
                 >
-                    <Link to={`/create-community`}>
-                        <Action
-                            text="Create Community"
-                            style={fab_styles}
-                        >
-                            <FontAwesomeIcon icon={faUsers} />
-                        </Action>
-                    </Link>
+                    <Action
+                        onClick={onClickFab}
+                        text="Create Community"
+                        style={fab_styles}
+                    >
+                        <FontAwesomeIcon icon={faUsers} />
+                    </Action>
                 </Fab>
             </Styles>
         </Ref>
@@ -87,10 +92,6 @@ export function ExploreCommunity() {
 export function ExploreCommunityGuest() {
 
     const contextRef = React.createRef()
-
-    const fab_styles = {
-        background: "#007bff"
-    }
 
     const [values, setValues] = useState({
         filterField: '',
@@ -133,19 +134,6 @@ export function ExploreCommunityGuest() {
                     </Grid.Column>
                 </Grid>
 
-                <Fab
-                    icon={<FontAwesomeIcon icon={faPlus} />}
-                    mainButtonStyles={fab_styles}
-                >
-                    <Link to={`/create-community`}>
-                        <Action
-                            text="Create Community"
-                            style={fab_styles}
-                        >
-                            <FontAwesomeIcon icon={faUsers} />
-                        </Action>
-                    </Link>
-                </Fab>
             </Styles>
         </Ref>
     )

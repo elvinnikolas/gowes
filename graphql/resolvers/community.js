@@ -1,6 +1,8 @@
 const Post = require('../../models/Post')
 const Community = require('../../models/Community')
 const Member = require('../../models/Member')
+const User = require('../../models/User')
+const Notification = require('../../models/Notification')
 const auth = require('../../utils/auth')
 
 module.exports = {
@@ -15,12 +17,22 @@ module.exports = {
             }
         },
 
+        async getApproveCommunities() {
+            try {
+                const communities = await Community.find({ isActive: false }).sort({ date: -1 })
+                return communities
+
+            } catch (error) {
+                throw new Error(error)
+            }
+        },
+
         async getFilterCommunities(_, { filter, location, sort }) {
             try {
                 let communities
 
                 if (filter == '' && location == '' && sort == '') {
-                    communities = await Community.find().sort({ date: -1 })
+                    communities = await Community.find({ isActive: true }).sort({ date: -1 })
 
                 } else {
                     if (filter && location) {
@@ -244,6 +256,85 @@ module.exports = {
             }
         },
 
+        async approveCommunity(_, { communityId }, context) {
+            const payload = auth(context)
+
+            let user = await User.findById(payload._id)
+            let community = await Community.findById(communityId)
+            let member = await Member.findOne({ community: communityId })
+
+            if (user.isAdmin == true) {
+                try {
+                    const updateActive = {
+                        isActive: true
+                    }
+
+                    if (community && member) {
+                        await Community.findOneAndUpdate(
+                            { _id: communityId },
+                            { $set: updateActive },
+                            { new: true })
+
+                        const newNotification = {
+                            community: communityId,
+                            user: member.user,
+                            content: "Your created community has been approved by admin",
+                            date: new Date().toISOString()
+                        }
+                        const notification = new Notification(newNotification)
+                        await notification.save()
+
+                    } else {
+                        throw new Error('Invalid community')
+                    }
+
+                } catch (error) {
+                    throw new Error(error)
+                }
+            } else {
+                throw new Error('User is not admin')
+            }
+
+            return 'community approved'
+        },
+
+        async disapproveCommunity(_, { communityId }, context) {
+            const payload = auth(context)
+
+            let user = await User.findById(payload._id)
+            let community = await Community.findById(communityId)
+            let member = await Member.findOne({ community: communityId })
+            let memberId = member.user
+
+            if (user.isAdmin == true) {
+                try {
+                    if (community && member) {
+                        await community.remove()
+                        await member.remove()
+
+                        const newNotification = {
+                            community: communityId,
+                            user: memberId,
+                            content: "Your created community has been disapproved by admin",
+                            date: new Date().toISOString()
+                        }
+                        const notification = new Notification(newNotification)
+                        await notification.save()
+
+                    } else {
+                        throw new Error('Invalid community')
+                    }
+
+                } catch (error) {
+                    throw new Error(error)
+                }
+            } else {
+                throw new Error('User is not admin')
+            }
+
+            return 'community dissaproved'
+        },
+
         async requestJoinCommunity(_, { communityId, message }, context) {
             const payload = auth(context)
 
@@ -388,6 +479,15 @@ module.exports = {
                         throw new Error(error)
                     }
 
+                    const newNotification = {
+                        community: communityId,
+                        user: userId,
+                        content: "Your request to join this community has been accepted",
+                        date: new Date().toISOString()
+                    }
+                    const notification = new Notification(newNotification)
+                    await notification.save()
+
                 } else {
                     throw new Error('Invalid community')
                 }
@@ -406,6 +506,16 @@ module.exports = {
             try {
                 if (member) {
                     await member.remove()
+
+                    const newNotification = {
+                        community: communityId,
+                        user: userId,
+                        content: "Your request to join this community has been rejected",
+                        date: new Date().toISOString()
+                    }
+                    const notification = new Notification(newNotification)
+                    await notification.save()
+
                     return 'Member removed'
                 }
                 else {
@@ -430,6 +540,16 @@ module.exports = {
 
                     if (member) {
                         await member.remove()
+
+                        const newNotification = {
+                            community: communityId,
+                            user: userId,
+                            content: "You have been kicked from this community",
+                            date: new Date().toISOString()
+                        }
+                        const notification = new Notification(newNotification)
+                        await notification.save()
+
                         return 'Member removed'
                     } else {
                         throw new Error(error)
@@ -458,7 +578,17 @@ module.exports = {
                     member = await Member.findOneAndUpdate(
                         { _id: id },
                         { $set: updateMember },
-                        { new: true })
+                        { new: true }
+                    )
+
+                    const newNotification = {
+                        community: communityId,
+                        user: userId,
+                        content: "You have been appointed as admin of this community",
+                        date: new Date().toISOString()
+                    }
+                    const notification = new Notification(newNotification)
+                    await notification.save()
                 }
 
             } catch (error) {

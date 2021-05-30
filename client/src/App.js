@@ -1,5 +1,5 @@
 //react
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Container } from 'semantic-ui-react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
@@ -30,12 +30,15 @@ import { Community, CommunityGuest } from './layouts/Community'
 import { CreateCommunity } from './layouts/CreateCommunity'
 import { CreateThread } from './layouts/CreateThread'
 import { ThreadDetail, ThreadDetailGuest } from './layouts/ThreadDetail'
-import Faq from './layouts/Faq'
+import { Faq, FaqAdmin } from './layouts/Faq'
+import { CommunityAdmin } from './layouts/CommunityAdmin'
 import Chat from './layouts/Chat'
+import Notification from './layouts/Notification'
 
 //route
 import AuthRoute from './routes/AuthRoute'
 import PrivateRoute from './routes/PrivateRoute'
+import AdminRoute from './routes/AdminRoute'
 
 const App = () => {
   return (
@@ -61,12 +64,16 @@ const App = () => {
               <PrivateRoute path="/create-thread/:id" component={CreateThread} />
               <PrivateRoute path="/thread/:id" component={ThreadDetail} />
               <PrivateRoute path="/chat" component={Chat} />
+              <PrivateRoute path="/notification" component={Notification} />
 
               <Route path="/faq" component={Faq} />
               <Route exact path="/explore-community-guest" component={ExploreCommunityGuest} />
               <Route exact path="/explore-thread-guest" component={ExploreThreadGuest} />
               <Route exact path="/community-guest/:id" component={CommunityGuest} />
               <Route path="/thread-guest/:id" component={ThreadDetailGuest} />
+
+              <AdminRoute path="/faq-admin" component={FaqAdmin} />
+              <AdminRoute path="/community-admin" component={CommunityAdmin} />
             </Switch>
           </Layout>
         </Container>

@@ -7,7 +7,6 @@ import styled from 'styled-components'
 
 import { AuthContext } from '../context/auth'
 import { useMutation } from '@apollo/client'
-import { useForm } from '../util/hooks'
 import { CREATE_POST, FETCH_QUERY_COMMUNITY } from '../util/graphql'
 
 const Styles = styled.div`

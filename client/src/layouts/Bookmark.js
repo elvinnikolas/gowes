@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Item, Transition, Divider, Header, Icon, Grid, Segment, Dropdown, Ref, Sticky } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
+import { Item, Transition, Divider, Header, Icon, Grid, Button, Segment, Dropdown, Ref, Sticky } from 'semantic-ui-react'
 import Spinner from '../components/Spinner'
 import { ThreadExplore } from '../components/Thread'
 import styled from 'styled-components'
@@ -74,20 +75,33 @@ function BookmarkThread() {
                         </Sticky>
 
                         <Segment placeholder>
-                            <Item.Group divided>
-                                {loading ? (
-                                    <Spinner />
-                                ) : (
+                            {loading ? (
+                                <Spinner />
+                            ) : posts.length > 0 ?
+                                (<Item.Group divided>
                                     <Transition.Group>
                                         {
                                             posts &&
                                             posts.map(post => (
-                                                <ThreadExplore key={post._id} post={post} />
+                                                <ThreadExplore key={post._id} post={post} refetch={refetch} />
                                             ))
                                         }
                                     </Transition.Group>
-                                )}
-                            </Item.Group>
+                                </Item.Group>) : (
+                                    <Segment placeholder>
+                                        <Header icon>
+                                            <Icon name='edit' />
+                                            No bookmarked threads yet
+                                            <br></br><br></br>
+                                            <Link to={`/explore-thread`}>
+                                                <Button primary>
+                                                    EXPLORE
+                                                </Button>
+                                            </Link>
+                                        </Header>
+                                    </Segment>
+                                )
+                            }
                         </Segment>
                     </Grid.Column>
 

@@ -90,7 +90,7 @@ const NavbarDefault = () => {
                 to="/faq"
               />
               <Menu.Item>
-                <Dropdown className="navbar-subtext" item text='EXPLORE'>
+                <Dropdown simple className="navbar-subtext" item text='EXPLORE'>
                   <Dropdown.Menu>
                     <Dropdown.Item
                       className="navbar-subtext"
@@ -112,18 +112,48 @@ const NavbarDefault = () => {
                     >
                       THREAD
                     </Dropdown.Item>
+                    <Dropdown.Item
+                      className="navbar-subtext"
+                      name='MARKETPLACE'
+                      active={activeItem === 'MARKETPLACE'}
+                      onClick={handleItemClick}
+                      as={Link}
+                      to="/marketplace"
+                    >
+                      MARKETPLACE
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </Menu.Item>
-              <Menu.Item
-                className="navbar-subtext"
-                name='MARKETPLACE'
-                active={activeItem === 'MARKETPLACE'}
-                onClick={handleItemClick}
-                as={Link}
-                to="/marketplace"
-              />
 
+              {auth.isAdmin &&
+                <Menu.Item>
+                  <Dropdown simple className="navbar-subtext" item text='ADMIN'>
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        className="navbar-subtext"
+                        name='FAQ-ADMIN'
+                        active={activeItem === 'FAQ-ADMIN'}
+                        onClick={handleItemClick}
+                        as={Link}
+                        to="/faq-admin"
+                      >
+                        FAQ
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        className="navbar-subtext"
+                        name='COMMUNITY-ADMIN'
+                        active={activeItem === 'COMMUNITY-ADMIN'}
+                        onClick={handleItemClick}
+                        as={Link}
+                        to="/community-admin"
+                      >
+                        COMMUNITY
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Menu.Item>
+              }
 
               <Menu.Menu position='right'>
                 <Menu.Item
@@ -224,7 +254,7 @@ const NavbarDefault = () => {
                 to="/faq"
               />
               <Menu.Item>
-                <Dropdown className="navbar-subtext" item text='EXPLORE'>
+                <Dropdown simple className="navbar-subtext" item text='EXPLORE'>
                   <Dropdown.Menu>
                     <Dropdown.Item
                       className="navbar-subtext"

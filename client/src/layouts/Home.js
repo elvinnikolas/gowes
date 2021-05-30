@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react'
-import { Item, Transition, Grid, Segment, Dropdown, Icon, Divider, Ref, Sticky } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
+import { Item, Transition, Grid, Segment, Dropdown, Icon, Divider, Header, Button, Ref, Sticky } from 'semantic-ui-react'
 
 import { ThreadExplore } from '../components/Thread'
 import Spinner from '../components/Spinner'
@@ -120,31 +121,43 @@ function Home() {
                             <Grid relaxed='very' stackable>
                                 <Grid.Column>
 
-                                    <Item.Group divided>
-                                        {loading ? (
-                                            <Spinner />
-                                        ) : (
-                                            filterCommunity ?
-                                                <Transition.Group>
+                                    {loading ? (
+                                        <Spinner />
+                                    ) : communities.length > 0 || allPosts.length > 0 ?
+                                        (<Item.Group divided>
+                                            {filterCommunity ?
+                                                (<Transition.Group>
                                                     {
                                                         filterPosts &&
                                                         filterPosts.map(post => (
                                                             <ThreadExplore key={post._id} post={post} refetch={refetch} />
                                                         ))
                                                     }
-                                                </Transition.Group>
+                                                </Transition.Group>)
                                                 :
-                                                <Transition.Group>
+                                                (<Transition.Group>
                                                     {
                                                         allPosts &&
                                                         allPosts.map(post => (
                                                             <ThreadExplore key={post._id} post={post} refetch={refetch} />
                                                         ))
                                                     }
-                                                </Transition.Group>
+                                                </Transition.Group>)}
+                                        </Item.Group>) : (
+                                            <Segment placeholder>
+                                                <Header icon>
+                                                    <Icon name='edit' />
+                                                    No community or threads yet
+                                                    <br></br><br></br>
+                                                    <Link to={`/explore-community`}>
+                                                        <Button primary>
+                                                            EXPLORE
+                                                        </Button>
+                                                    </Link>
+                                                </Header>
+                                            </Segment>
                                         )
-                                        }
-                                    </Item.Group>
+                                    }
 
                                 </Grid.Column>
                             </Grid>

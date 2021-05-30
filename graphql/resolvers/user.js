@@ -62,7 +62,9 @@ module.exports = {
             //create jwt token
             const payload = {
                 _id: user.id,
-                name: user.name
+                name: user.name,
+                image: user.image,
+                isAdmin: user.isAdmin
             }
             const jwtSecret = config.get('jwtSecret')
 
@@ -102,14 +104,14 @@ module.exports = {
                 })
             }
 
-            if (password !== password2) {
-                throw new UserInputError('Password does not match', {
-                    errors: {
-                        password: 'Password must match',
-                        password2: 'Password must match'
-                    }
-                })
-            }
+            // if (password !== password2) {
+            //     throw new UserInputError('Password does not match', {
+            //         errors: {
+            //             password: 'Password must match',
+            //             password2: 'Password must match'
+            //         }
+            //     })
+            // }
 
             //hash password
             const salt = await bcrypt.genSalt(10)
@@ -120,6 +122,8 @@ module.exports = {
                 name,
                 email,
                 password,
+                bio: '',
+                image: 'https://firebasestorage.googleapis.com/v0/b/gowes-community.appspot.com/o/profile%2Fprofile.jpg?alt=media&token=f4906486-2686-47e8-95a9-68719f51e05f',
                 date: new Date().toISOString()
             })
 
@@ -129,7 +133,9 @@ module.exports = {
             const payload = {
                 user: {
                     _id: user.id,
-                    name: user.name
+                    name: user.name,
+                    image: user.image,
+                    isAdmin: user.isAdmin
                 }
             }
             const jwtSecret = config.get('jwtSecret')

@@ -1,18 +1,15 @@
 import React, { useContext, useState } from 'react'
 import { useHistory, Link } from 'react-router-dom'
-import { Feed, Image, Icon, Button, Comment, Header, Divider, Confirm, Grid, Segment } from 'semantic-ui-react'
+import { Feed, Icon, Button, Comment, Header, Divider, Confirm, Grid, Segment } from 'semantic-ui-react'
 import { CommentThread, CreateComment } from '../components/Comment'
 import Moment from 'react-moment'
 import styled from 'styled-components'
 import Spinner from '../components/Spinner'
-import bikeImage from '../assets/bike.jpg'
-import gowesImage from '../assets/gowes.jpg'
 import { Slide } from 'react-slideshow-image'
 
 import { useMutation, useQuery } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 import {
-    GET_POSTS,
     GET_POST,
     LIKE_POST,
     DISLIKE_POST,
@@ -265,7 +262,7 @@ export function ThreadDetailGuest(props) {
             <Spinner />
         )
     } else {
-        const { _id, user, date, title, content, images, likes, dislikes, comments, bookmarks } = getPost
+        const { _id, user, date, title, content, images, likes, dislikes, comments } = getPost
         const sliderProperties = {
             autoplay: true,
             indicators: true,

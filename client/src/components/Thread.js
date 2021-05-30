@@ -1,18 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Button, Icon, Item, Menu, Confirm } from 'semantic-ui-react'
+import { Button, Icon, Item, Confirm } from 'semantic-ui-react'
 import moment from 'moment'
 import styled from 'styled-components'
-import profileImage from '../assets/profile.jpg'
 import gowesImage from '../assets/gowes.jpg'
 
 import { useMutation } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 
 import {
-    GET_POSTS,
-    GET_BOOKMARK_POSTS,
     LIKE_POST,
     DISLIKE_POST,
     BOOKMARK_POST,
@@ -68,13 +65,13 @@ const Styles = styled.div`
 `
 
 export function Thread({
-    post: { _id, user, date, title, content, images, likes, dislikes, comments, bookmarks, community },
+    post: { _id, user, date, title, content, images, likes, dislikes, comments, bookmarks },
     refetch
 }) {
     const { auth } = useContext(AuthContext)
     let { liked, disliked, bookmarked } = false
 
-    if (content.length > 200) {
+    if (content.length > 500) {
         content = content.substring(0, 500)
         content = content + '...'
     }
@@ -97,39 +94,15 @@ export function Thread({
     })
     const [bookmarkPost] = useMutation(BOOKMARK_POST, {
         variables: { postId: _id },
-        update(proxy, result) {
-            const data = proxy.readQuery({
-                query: GET_BOOKMARK_POSTS
-            })
-
-            if (!bookmark) {
-                proxy.writeQuery({
-                    query: GET_BOOKMARK_POSTS,
-                    data: {
-                        getBookmarkPosts: [result.data.bookmarkPost, ...data.getBookmarkPosts]
-                    }
-                })
-            } else {
-                proxy.writeQuery({
-                    query: GET_BOOKMARK_POSTS,
-                    data: {
-                        getBookmarkPosts: data.getBookmarkPosts.filter(p => p._id !== _id)
-                    }
-                })
-            }
-
+        update() {
+            refetch()
         }
     })
     const [deletePost] = useMutation(DELETE_POST, {
         variables: { postId: _id },
         update() {
             refetch()
-        },
-        refetchQueries: [{
-            query: FETCH_QUERY_COMMUNITY,
-            variables: { userId: auth._id, communityId: community._id }
-        }],
-        awaitRefetchQueries: true
+        }
     })
 
     const [confirmOpen, setConfirmOpen] = useState(false)
@@ -241,12 +214,13 @@ export function Thread({
 }
 
 export function ThreadExplore({
-    post: { _id, user, date, title, content, images, likes, dislikes, comments, bookmarks, community }
+    post: { _id, user, date, title, content, images, likes, dislikes, comments, bookmarks, community },
+    refetch
 }) {
     const { auth } = useContext(AuthContext)
     let { liked, disliked, bookmarked } = false
 
-    if (content.length > 200) {
+    if (content.length > 500) {
         content = content.substring(0, 500)
         content = content + '...'
     }
@@ -269,43 +243,15 @@ export function ThreadExplore({
     })
     const [bookmarkPost] = useMutation(BOOKMARK_POST, {
         variables: { postId: _id },
-        update(proxy, result) {
-            const data = proxy.readQuery({
-                query: GET_BOOKMARK_POSTS
-            })
-
-            if (!bookmark) {
-                proxy.writeQuery({
-                    query: GET_BOOKMARK_POSTS,
-                    data: {
-                        getBookmarkPosts: [result.data.bookmarkPost, ...data.getBookmarkPosts]
-                    }
-                })
-            } else {
-                proxy.writeQuery({
-                    query: GET_BOOKMARK_POSTS,
-                    data: {
-                        getBookmarkPosts: data.getBookmarkPosts.filter(p => p._id !== _id)
-                    }
-                })
-            }
-
+        update() {
+            refetch()
         }
     })
     const [deletePost] = useMutation(DELETE_POST, {
-        update(proxy) {
-            setConfirmOpen(false)
-            const data = proxy.readQuery({
-                query: GET_POSTS
-            })
-            proxy.writeQuery({
-                query: GET_POSTS,
-                data: {
-                    getPosts: data.getPosts.filter(p => p._id !== _id)
-                }
-            })
-        },
-        variables: { postId: _id }
+        variables: { postId: _id },
+        update() {
+            refetch()
+        }
     })
 
     const [confirmOpen, setConfirmOpen] = useState(false)
@@ -428,7 +374,7 @@ export function ThreadCommunity({
     const { auth } = useContext(AuthContext)
     let { liked, disliked, bookmarked } = false
 
-    if (content.length > 200) {
+    if (content.length > 500) {
         content = content.substring(0, 500)
         content = content + '...'
     }
@@ -451,27 +397,8 @@ export function ThreadCommunity({
     })
     const [bookmarkPost] = useMutation(BOOKMARK_POST, {
         variables: { postId: _id },
-        update(proxy, result) {
-            const data = proxy.readQuery({
-                query: GET_BOOKMARK_POSTS
-            })
-
-            if (!bookmark) {
-                proxy.writeQuery({
-                    query: GET_BOOKMARK_POSTS,
-                    data: {
-                        getBookmarkPosts: [result.data.bookmarkPost, ...data.getBookmarkPosts]
-                    }
-                })
-            } else {
-                proxy.writeQuery({
-                    query: GET_BOOKMARK_POSTS,
-                    data: {
-                        getBookmarkPosts: data.getBookmarkPosts.filter(p => p._id !== _id)
-                    }
-                })
-            }
-
+        update() {
+            refetch()
         }
     })
     const [deletePost] = useMutation(DELETE_POST, {
@@ -595,10 +522,10 @@ export function ThreadCommunity({
 }
 
 export function ThreadGuest({
-    post: { _id, user, date, title, content, images, likes, dislikes, comments, bookmarks, community }
+    post: { _id, user, date, title, content, images, likes, dislikes, comments }
 }) {
 
-    if (content.length > 200) {
+    if (content.length > 500) {
         content = content.substring(0, 500)
         content = content + '...'
     }

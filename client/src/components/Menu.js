@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
     Tab,
-    Input,
     Menu,
     Segment,
     Sticky,
@@ -13,7 +12,6 @@ import {
     Transition,
     Label,
     Card,
-    Ref,
     Image,
     Dropdown,
     Confirm,
@@ -24,7 +22,6 @@ import {
 import styled from 'styled-components'
 
 import { ThreadCommunity, ThreadGuest } from './Thread'
-import profileImage from '../assets/profile.jpg'
 
 import {
     FETCH_QUERY_MENU_COMMUNITY,
@@ -121,7 +118,7 @@ export function MenuCommunity({
     })
 
     return (
-        <div>
+        <Styles>
             <Sticky context={contextRef} offset={70}>
                 <Segment>
                     <Menu pointing secondary>
@@ -175,7 +172,7 @@ export function MenuCommunity({
                                                     {
                                                         posts &&
                                                         posts.map(post => (
-                                                            <ThreadCommunity key={post._id} post={post} admin={isAdmin} />
+                                                            <ThreadCommunity key={post._id} post={post} admin={isAdmin} refetch={refetch} />
                                                         ))
                                                     }
                                                 </Transition.Group>
@@ -265,7 +262,6 @@ export function MenuCommunity({
                                         members &&
                                         members.map(member => (
                                             <Item>
-                                                {console.log(member)}
                                                 <Item.Image size='tiny' src={member.user.image} />
 
                                                 <Item.Content>
@@ -304,13 +300,15 @@ export function MenuCommunity({
                                                                                         confirmButton="YES"
                                                                                         open={confirmKickOpen}
                                                                                         onCancel={() => setConfirmKickOpen(false)}
-                                                                                        onConfirm={() =>
+                                                                                        onConfirm={() => {
                                                                                             removeMember({
                                                                                                 variables: {
                                                                                                     communityId: communityId,
                                                                                                     userId: member.user._id
                                                                                                 }
                                                                                             })
+                                                                                            setConfirmKickOpen(false)
+                                                                                        }
                                                                                         }
                                                                                     />
                                                                                 </Dropdown.Menu>
@@ -333,13 +331,15 @@ export function MenuCommunity({
                                                                                         confirmButton="YES"
                                                                                         open={confirmAdminOpen}
                                                                                         onCancel={() => setConfirmAdminOpen(false)}
-                                                                                        onConfirm={() =>
+                                                                                        onConfirm={() => {
                                                                                             appointAdmin({
                                                                                                 variables: {
                                                                                                     communityId: communityId,
                                                                                                     userId: member.user._id
                                                                                                 }
                                                                                             })
+                                                                                            setConfirmAdminOpen(false)
+                                                                                        }
                                                                                         }
                                                                                     />
                                                                                     <Dropdown.Item
@@ -352,13 +352,15 @@ export function MenuCommunity({
                                                                                         confirmButton="YES"
                                                                                         open={confirmKickOpen}
                                                                                         onCancel={() => setConfirmKickOpen(false)}
-                                                                                        onConfirm={() =>
+                                                                                        onConfirm={() => {
                                                                                             removeMember({
                                                                                                 variables: {
                                                                                                     communityId: communityId,
                                                                                                     userId: member.user._id
                                                                                                 }
                                                                                             })
+                                                                                            setConfirmKickOpen(false)
+                                                                                        }
                                                                                         }
                                                                                     />
                                                                                 </Dropdown.Menu>
@@ -450,7 +452,7 @@ export function MenuCommunity({
                 ]}
                 activeIndex={activeTab}
             />
-        </div>
+        </Styles>
     )
 }
 

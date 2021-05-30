@@ -1,23 +1,19 @@
 import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Container, Icon, Image, Label, Button, Confirm, Card, Divider, Modal, Form, TextArea } from 'semantic-ui-react'
-import styled from 'styled-components'
 
 import {
     FETCH_QUERY_HEADER_COMMUNITY,
     REQUEST_MEMBER,
     JOIN_MEMBER,
     LEAVE_MEMBER,
-    GET_COMMUNITIES
+    GET_FILTER_COMMUNITIES
 } from '../util/graphql'
 import { useMutation } from '@apollo/client'
 import { AuthContext } from '../context/auth'
 
-const Styles = styled.div`
-`
-
 export function HeaderCommunity({
-    details: { _id, name, bio, date, city, province, image, isPrivate, isActive, memberCount },
+    details: { _id, name, bio, city, province, image, isPrivate, memberCount },
     status: { isAdmin, isJoin, isRequest },
     members,
     posts
@@ -65,7 +61,8 @@ export function HeaderCommunity({
             history.push('/explore-community')
         },
         refetchQueries: [{
-            query: GET_COMMUNITIES
+            query: GET_FILTER_COMMUNITIES,
+            variables: { filter: '', location: '', sort: '' }
         }],
         awaitRefetchQueries: true
     })
@@ -126,7 +123,7 @@ export function HeaderCommunity({
                                     isAdmin ?
                                         (
                                             <>
-                                                <Button negative onClick={onLeaveCommunity}>
+                                                <Button negative onClick={() => setConfirmOpenLeave(true)}>
                                                     Leave
                                                     </Button>
                                                 <Confirm
