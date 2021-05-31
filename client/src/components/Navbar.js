@@ -117,8 +117,8 @@ const NavbarDefault = () => {
                       name='MARKETPLACE'
                       active={activeItem === 'MARKETPLACE'}
                       onClick={handleItemClick}
-                      as={Link}
-                      to="/marketplace"
+                      as='a'
+                      href="http://gowes-market-react-client.herokuapp.com/"
                     >
                       MARKETPLACE
                     </Dropdown.Item>
@@ -284,10 +284,9 @@ const NavbarDefault = () => {
                 name='MARKETPLACE'
                 active={activeItem === 'MARKETPLACE'}
                 onClick={handleItemClick}
-                as={Link}
-                to="/marketplace"
+                as='a'
+                href="http://gowes-market-react-client.herokuapp.com/"
               />
-
 
               <Menu.Menu position='right'>
                 <Menu.Item>
